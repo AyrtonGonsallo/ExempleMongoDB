@@ -12,61 +12,72 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.Pari_userDto;
+import com.test.microservices.mappers.Pari_userDtoToPari_user;
 import com.test.microservices.pojos.Pari_user;
 import com.test.microservices.repositories.Pari_userRepository;
 
 @RestController
 public class PariUserController {
 	Pari_userRepository puRepo;
-	public PariUserController(Pari_userRepository repo) {
+	Pari_userDtoToPari_user mapper;
+	public PariUserController(Pari_userRepository repo,Pari_userDtoToPari_user m) {
 		this.puRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getPari_userByIdMongo/{id}")
-public ResponseEntity<Pari_user> getPari_user( @PathVariable String id) {
+public ResponseEntity<Pari_userDto> getPari_user( @PathVariable String id) {
 	if(puRepo.existsByIdMongo(id)) {
 		Pari_user ab=puRepo.findByIdMongo( id);
-		return new ResponseEntity<Pari_user>(ab,HttpStatus.OK);
+		Pari_userDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Pari_userDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari_user>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Pari_userDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getPari_userById/{id}")
-public ResponseEntity<Pari_user> getPari_user( @PathVariable int id) {
+public ResponseEntity<Pari_userDto> getPari_user( @PathVariable int id) {
 	if(puRepo.existsById(id)) {
 		Pari_user ab=puRepo.findById( id);
-		return new ResponseEntity<Pari_user>(ab,HttpStatus.OK);
+		Pari_userDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Pari_userDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari_user>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Pari_userDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllPari_users")
-public ResponseEntity<List<Pari_user>> getPari_user( ) {
+public ResponseEntity<List<Pari_userDto>> getPari_user( ) {
 	List<Pari_user> lab=puRepo.findAll();
-	return new ResponseEntity<List<Pari_user>>(lab,HttpStatus.OK);
+	List<Pari_userDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<Pari_userDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addPari_user")
-public ResponseEntity<Pari_user> addPari_user(@RequestBody Pari_user ab) {
-	if(!puRepo.existsById(ab.getId())) {
+public ResponseEntity<Pari_userDto> addPari_user(@RequestBody Pari_userDto dto) {
+	if(!puRepo.existsById(dto.getId())) {
+		Pari_user ab=mapper.dtoToObject(dto);
 		puRepo.save(ab);
-		return new ResponseEntity<Pari_user>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<Pari_userDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Pari_user>(HttpStatus.CONFLICT);
+	return new ResponseEntity<Pari_userDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updatePari_user/{id}")
-public ResponseEntity<Pari_user> updatePari_user(@PathVariable int id,@RequestBody Pari_user ab) {
+public ResponseEntity<Pari_userDto> updatePari_user(@PathVariable int id,@RequestBody Pari_userDto dto) {
 	if(puRepo.existsById(id)) {
+		Pari_user ab=mapper.dtoToObject(dto);
 		puRepo.save(ab);
-		return new ResponseEntity<Pari_user>(ab,HttpStatus.OK);
+		return new ResponseEntity<Pari_userDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari_user>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Pari_userDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deletePari_user/{id}")
-public ResponseEntity<Pari_user> deletePari_user(@PathVariable int id) {
+public ResponseEntity<Pari_userDto> deletePari_user(@PathVariable int id) {
 	if(puRepo.existsById(id)) {
 		Pari_user ab=puRepo.deleteById(id);
-		return new ResponseEntity<Pari_user>(ab,HttpStatus.OK);
+		Pari_userDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Pari_userDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari_user>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Pari_userDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

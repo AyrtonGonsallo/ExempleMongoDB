@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -16,5 +17,7 @@ public class Sous_categorie {
 	@Field("ID")
 	public int id;
 	public int categorie_ID;
+	@DocumentReference
+	private Categorie categorie2;
 	public String nom_sous_categorie;
 }

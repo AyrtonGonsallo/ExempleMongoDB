@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -20,5 +21,7 @@ public class Evenementimportantdirect {
 	public String titre;
 	public String texte;
 	public int evenement_important_id;
+	@DocumentReference
+	private Evenementimportant evenementimportant2;
 	public Boolean une;
 }

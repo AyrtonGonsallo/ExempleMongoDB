@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
@@ -21,6 +22,10 @@ public class Champion_popularite {
 	@Field("id")
 	public int id;
 	public int champion_id;
+	@DocumentReference
+	private Champion champion2;
+	@DocumentReference
+	private User user2;
 	public int user_id;
 	public java.util.Date date;
 	public String ip;

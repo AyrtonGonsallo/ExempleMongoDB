@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +15,10 @@ public class Technique_specialiste {
 	private String idMongo;
 	@Field("id")
 	public int id;
+	@DocumentReference
+	private Technique technique;
+	@DocumentReference
+	private Champion champion;
 	public int id_technique;
 	public int id_champion;
 	public String nom_champion;

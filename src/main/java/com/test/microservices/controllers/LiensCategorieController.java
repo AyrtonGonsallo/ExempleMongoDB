@@ -12,61 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.LienscategorieDto;
+import com.test.microservices.mappers.LienscategorieDtoToLienscategorie;
 import com.test.microservices.pojos.Lienscategorie;
 import com.test.microservices.repositories.LienscategorieRepository;
 
 @RestController
 public class LiensCategorieController {
-		LienscategorieRepository abonnementRepo;
-		public LiensCategorieController(LienscategorieRepository repo) {
-			this.abonnementRepo=repo;
-			// TODO Auto-generated constructor stub
-		}
-	@GetMapping("/getLienscategorieByIdMongo/{id}")
-	public ResponseEntity<Lienscategorie> getLienscategorie( @PathVariable String id) {
-		if(abonnementRepo.existsByIdMongo(id)) {
-			Lienscategorie ab=abonnementRepo.findByIdMongo( id);
-			return new ResponseEntity<Lienscategorie>(ab,HttpStatus.OK);
-		}
-		return new ResponseEntity<Lienscategorie>(HttpStatus.NOT_FOUND);
+	LienscategorieDtoToLienscategorie mapper;
+	LienscategorieRepository objetRepo;
+	public LiensCategorieController(LienscategorieRepository repo,LienscategorieDtoToLienscategorie m) {
+		this.objetRepo=repo;
+		this.mapper=m;
+		// TODO Auto-generated constructor stub
 	}
-	@GetMapping("/getLienscategorieById/{id}")
-	public ResponseEntity<Lienscategorie> getLienscategorie( @PathVariable int id) {
-		if(abonnementRepo.existsById(id)) {
-			Lienscategorie ab=abonnementRepo.findById( id);
-			return new ResponseEntity<Lienscategorie>(ab,HttpStatus.OK);
-		}
-		return new ResponseEntity<Lienscategorie>(HttpStatus.NOT_FOUND);
+@GetMapping("/getLienscategorieByIdMongo/{id}")
+public ResponseEntity<LienscategorieDto> getLienscategorie( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Lienscategorie ab=objetRepo.findByIdMongo( id);
+		LienscategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<LienscategorieDto>(dto,HttpStatus.OK);
 	}
-	@GetMapping("/getAllLienscategories")
-	public ResponseEntity<List<Lienscategorie>> getLienscategorie( ) {
-		List<Lienscategorie> lab=abonnementRepo.findAll();
-		return new ResponseEntity<List<Lienscategorie>>(lab,HttpStatus.OK);
+	return new ResponseEntity<LienscategorieDto>(HttpStatus.NOT_FOUND);
+}
+@GetMapping("/getLienscategorieById/{id}")
+public ResponseEntity<LienscategorieDto> getLienscategorie( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Lienscategorie ab=objetRepo.findById( id);
+		LienscategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<LienscategorieDto>(dto,HttpStatus.OK);
 	}
-	@PostMapping("/addLienscategorie")
-	public ResponseEntity<Lienscategorie> addLienscategorie(@RequestBody Lienscategorie ab) {
-		if(!abonnementRepo.existsById(ab.getId())) {
-			abonnementRepo.save(ab);
-			return new ResponseEntity<Lienscategorie>(ab,HttpStatus.CREATED);
-		}
-		return new ResponseEntity<Lienscategorie>(HttpStatus.CONFLICT);
+	return new ResponseEntity<LienscategorieDto>(HttpStatus.NOT_FOUND);
+}
+@GetMapping("/getAllLienscategories")
+public ResponseEntity<List<LienscategorieDto>> getLienscategorie( ) {
+	List<Lienscategorie> lab=objetRepo.findAll();
+	List<LienscategorieDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<LienscategorieDto>>(ldto,HttpStatus.OK);
+}
+@PostMapping("/addLienscategorie")
+public ResponseEntity<LienscategorieDto> addLienscategorie(@RequestBody LienscategorieDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Lienscategorie ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<LienscategorieDto>(dto,HttpStatus.CREATED);
 	}
-	@PutMapping("/updateLienscategorie/{id}")
-	public ResponseEntity<Lienscategorie> updateLienscategorie(@PathVariable int id,@RequestBody Lienscategorie ab) {
-		if(abonnementRepo.existsById(id)) {
-			abonnementRepo.save(ab);
-			return new ResponseEntity<Lienscategorie>(ab,HttpStatus.OK);
-		}
-		return new ResponseEntity<Lienscategorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<LienscategorieDto>(HttpStatus.CONFLICT);
+}
+@PutMapping("/updateLienscategorie/{id}")
+public ResponseEntity<LienscategorieDto> updateLienscategorie(@PathVariable int id,@RequestBody LienscategorieDto dto) {
+	if(objetRepo.existsById(id)) {
+		Lienscategorie ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<LienscategorieDto>(dto,HttpStatus.OK);
 	}
-	@DeleteMapping("/deleteLienscategorie/{id}")
-	public ResponseEntity<Lienscategorie> deleteLienscategorie(@PathVariable int id) {
-		if(abonnementRepo.existsById(id)) {
-			Lienscategorie ab=abonnementRepo.deleteById(id);
-			return new ResponseEntity<Lienscategorie>(ab,HttpStatus.OK);
-		}
-		return new ResponseEntity<Lienscategorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<LienscategorieDto>(HttpStatus.NOT_FOUND);
+}
+@DeleteMapping("/deleteLienscategorie/{id}")
+public ResponseEntity<LienscategorieDto> deleteLienscategorie(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Lienscategorie ab=objetRepo.deleteById(id);
+		LienscategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<LienscategorieDto>(dto,HttpStatus.OK);
 	}
+	return new ResponseEntity<LienscategorieDto>(HttpStatus.NOT_FOUND);
+}
+	
 
-
-	}
+}

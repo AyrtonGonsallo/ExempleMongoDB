@@ -12,59 +12,69 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.CategorieDto;
+import com.test.microservices.mappers.CategorieDtoToCategorie;
 import com.test.microservices.pojos.Categorie;
 import com.test.microservices.repositories.CategorieRepository;
 @RestController
 public class CategorieController {
 	CategorieRepository categorieRepo;
-	public CategorieController(CategorieRepository repo) {
+	CategorieDtoToCategorie mapper;
+	public CategorieController(CategorieRepository repo,CategorieDtoToCategorie m) {
 		this.categorieRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getCategorieByIdMongo/{id}")
-public ResponseEntity<Categorie> getCategorie( @PathVariable String id) {
+public ResponseEntity<CategorieDto> getCategorie( @PathVariable String id) {
 	if(categorieRepo.existsByIdMongo(id)) {
 		Categorie ab=categorieRepo.findByIdMongo( id);
-		return new ResponseEntity<Categorie>(ab,HttpStatus.OK);
+		CategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<CategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<CategorieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getCategorieById/{id}")
-public ResponseEntity<Categorie> getCategorie( @PathVariable int id) {
+public ResponseEntity<CategorieDto> getCategorie( @PathVariable int id) {
 	if(categorieRepo.existsById(id)) {
 		Categorie ab=categorieRepo.findById( id);
-		return new ResponseEntity<Categorie>(ab,HttpStatus.OK);
+		CategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<CategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<CategorieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllCategories")
-public ResponseEntity<List<Categorie>> getCategorie( ) {
+public ResponseEntity<List<CategorieDto>> getCategorie( ) {
 	List<Categorie> lab=categorieRepo.findAll();
-	return new ResponseEntity<List<Categorie>>(lab,HttpStatus.OK);
+	List<CategorieDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<CategorieDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addCategorie")
-public ResponseEntity<Categorie> addCategorie(@RequestBody Categorie ab) {
-	if(!categorieRepo.existsById(ab.getId())) {
+public ResponseEntity<CategorieDto> addCategorie(@RequestBody CategorieDto dto) {
+	if(!categorieRepo.existsById(dto.getId())) {
+		Categorie ab=mapper.dtoToObject(dto);
 		categorieRepo.save(ab);
-		return new ResponseEntity<Categorie>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<CategorieDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Categorie>(HttpStatus.CONFLICT);
+	return new ResponseEntity<CategorieDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateCategorie/{id}")
-public ResponseEntity<Categorie> updateCategorie(@PathVariable int id,@RequestBody Categorie ab) {
+public ResponseEntity<CategorieDto> updateCategorie(@PathVariable int id,@RequestBody CategorieDto dto) {
 	if(categorieRepo.existsById(id)) {
+		Categorie ab=mapper.dtoToObject(dto);
 		categorieRepo.save(ab);
-		return new ResponseEntity<Categorie>(ab,HttpStatus.OK);
+		return new ResponseEntity<CategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<CategorieDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteCategorie/{id}")
-public ResponseEntity<Categorie> deleteCategorie(@PathVariable int id) {
+public ResponseEntity<CategorieDto> deleteCategorie(@PathVariable int id) {
 	if(categorieRepo.existsById(id)) {
 		Categorie ab=categorieRepo.deleteById(id);
-		return new ResponseEntity<Categorie>(ab,HttpStatus.OK);
+		CategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<CategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<CategorieDto>(HttpStatus.NOT_FOUND);
 }
 
 

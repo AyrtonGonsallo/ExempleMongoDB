@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +27,10 @@ public class User {
 	public String pays;
 	public String grade;
 	public String club;
+	@DocumentReference
+	private Pays pays2;
+	@DocumentReference
+	private Club club2;
 	public String user_ip;
 	public Boolean newsletter;
 	public Boolean offres;

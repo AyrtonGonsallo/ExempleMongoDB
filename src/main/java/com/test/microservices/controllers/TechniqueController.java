@@ -12,61 +12,72 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.TechniqueDto;
+import com.test.microservices.mappers.TechniqueDtoToTechnique;
 import com.test.microservices.pojos.Technique;
 import com.test.microservices.repositories.TechniqueRepository;
 
 @RestController
 public class TechniqueController {
-	TechniqueRepository techniqueRepo;
-	public TechniqueController(TechniqueRepository repo) {
-		this.techniqueRepo=repo;
+	TechniqueRepository tsRepo;
+	TechniqueDtoToTechnique mapper;
+	public TechniqueController(TechniqueRepository repo,TechniqueDtoToTechnique m) {
+		this.tsRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getTechniqueByIdMongo/{id}")
-public ResponseEntity<Technique> getTechnique( @PathVariable String id) {
-	if(techniqueRepo.existsByIdMongo(id)) {
-		Technique ab=techniqueRepo.findByIdMongo( id);
-		return new ResponseEntity<Technique>(ab,HttpStatus.OK);
+public ResponseEntity<TechniqueDto> getTechnique( @PathVariable String id) {
+	if(tsRepo.existsByIdMongo(id)) {
+		Technique ab=tsRepo.findByIdMongo( id);
+		TechniqueDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<TechniqueDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Technique>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<TechniqueDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getTechniqueById/{id}")
-public ResponseEntity<Technique> getTechnique( @PathVariable int id) {
-	if(techniqueRepo.existsById(id)) {
-		Technique ab=techniqueRepo.findById( id);
-		return new ResponseEntity<Technique>(ab,HttpStatus.OK);
+public ResponseEntity<TechniqueDto> getTechnique( @PathVariable int id) {
+	if(tsRepo.existsById(id)) {
+		Technique ab=tsRepo.findById( id);
+		TechniqueDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<TechniqueDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Technique>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<TechniqueDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllTechniques")
-public ResponseEntity<List<Technique>> getTechnique( ) {
-	List<Technique> lab=techniqueRepo.findAll();
-	return new ResponseEntity<List<Technique>>(lab,HttpStatus.OK);
+public ResponseEntity<List<TechniqueDto>> getTechnique( ) {
+	List<Technique> lab=tsRepo.findAll();
+	List<TechniqueDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<TechniqueDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addTechnique")
-public ResponseEntity<Technique> addTechnique(@RequestBody Technique ab) {
-	if(!techniqueRepo.existsById(ab.getId())) {
-		techniqueRepo.save(ab);
-		return new ResponseEntity<Technique>(ab,HttpStatus.CREATED);
+public ResponseEntity<TechniqueDto> addTechnique(@RequestBody TechniqueDto dto) {
+	if(!tsRepo.existsById(dto.getId())) {
+		Technique ab=mapper.dtoToObject(dto);
+		tsRepo.save(ab);
+		return new ResponseEntity<TechniqueDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Technique>(HttpStatus.CONFLICT);
+	return new ResponseEntity<TechniqueDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateTechnique/{id}")
-public ResponseEntity<Technique> updateTechnique(@PathVariable int id,@RequestBody Technique ab) {
-	if(techniqueRepo.existsById(id)) {
-		techniqueRepo.save(ab);
-		return new ResponseEntity<Technique>(ab,HttpStatus.OK);
+public ResponseEntity<TechniqueDto> updateTechnique(@PathVariable int id,@RequestBody TechniqueDto dto) {
+	if(tsRepo.existsById(id)) {
+		Technique ab=mapper.dtoToObject(dto);
+		tsRepo.save(ab);
+		return new ResponseEntity<TechniqueDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Technique>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<TechniqueDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteTechnique/{id}")
-public ResponseEntity<Technique> deleteTechnique(@PathVariable int id) {
-	if(techniqueRepo.existsById(id)) {
-		Technique ab=techniqueRepo.deleteById(id);
-		return new ResponseEntity<Technique>(ab,HttpStatus.OK);
+public ResponseEntity<TechniqueDto> deleteTechnique(@PathVariable int id) {
+	if(tsRepo.existsById(id)) {
+		Technique ab=tsRepo.deleteById(id);
+		TechniqueDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<TechniqueDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Technique>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<TechniqueDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

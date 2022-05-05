@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.UserDto;
+import com.test.microservices.mappers.UserDtoToUser;
 import com.test.microservices.pojos.User;
-import com.test.microservices.repositories.UsersRepository;
+import com.test.microservices.repositories.UserRepository;
 
 @RestController
 public class UserController {
-	UsersRepository userRepo;
-	public UserController(UsersRepository repo) {
+	UserRepository userRepo;
+	UserDtoToUser mapper;
+	public UserController(UserRepository repo,UserDtoToUser m) {
 		this.userRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getUserByIdMongo/{id}")
-public ResponseEntity<User> getUser( @PathVariable String id) {
+public ResponseEntity<UserDto> getUser( @PathVariable String id) {
 	if(userRepo.existsByIdMongo(id)) {
 		User ab=userRepo.findByIdMongo( id);
-		return new ResponseEntity<User>(ab,HttpStatus.OK);
+		UserDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<UserDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<UserDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getUserById/{id}")
-public ResponseEntity<User> getUser( @PathVariable int id) {
+public ResponseEntity<UserDto> getUser( @PathVariable int id) {
 	if(userRepo.existsById(id)) {
 		User ab=userRepo.findById( id);
-		return new ResponseEntity<User>(ab,HttpStatus.OK);
+		UserDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<UserDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<UserDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllUsers")
-public ResponseEntity<List<User>> getUser( ) {
+public ResponseEntity<List<UserDto>> getUser( ) {
 	List<User> lab=userRepo.findAll();
-	return new ResponseEntity<List<User>>(lab,HttpStatus.OK);
+	List<UserDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<UserDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addUser")
-public ResponseEntity<User> addUser(@RequestBody User ab) {
-	if(!userRepo.existsById(ab.getId())) {
+public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto) {
+	if(!userRepo.existsById(dto.getId())) {
+		User ab=mapper.dtoToObject(dto);
 		userRepo.save(ab);
-		return new ResponseEntity<User>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<UserDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<User>(HttpStatus.CONFLICT);
+	return new ResponseEntity<UserDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateUser/{id}")
-public ResponseEntity<User> updateUser(@PathVariable int id,@RequestBody User ab) {
+public ResponseEntity<UserDto> updateUser(@PathVariable int id,@RequestBody UserDto dto) {
 	if(userRepo.existsById(id)) {
+		User ab=mapper.dtoToObject(dto);
 		userRepo.save(ab);
-		return new ResponseEntity<User>(ab,HttpStatus.OK);
+		return new ResponseEntity<UserDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<UserDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteUser/{id}")
-public ResponseEntity<User> deleteUser(@PathVariable int id) {
+public ResponseEntity<UserDto> deleteUser(@PathVariable int id) {
 	if(userRepo.existsById(id)) {
 		User ab=userRepo.deleteById(id);
-		return new ResponseEntity<User>(ab,HttpStatus.OK);
+		UserDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<UserDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<UserDto>(HttpStatus.NOT_FOUND);
 }
 
 

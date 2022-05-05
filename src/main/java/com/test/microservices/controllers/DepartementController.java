@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.DepartementDto;
+import com.test.microservices.mappers.DepartementDtoToDepartement;
 import com.test.microservices.pojos.Departement;
-import com.test.microservices.repositories.DepartementsRepository;
+import com.test.microservices.repositories.DepartementRepository;
 @RestController
 public class DepartementController {
-	DepartementsRepository departementRepo;
-	public DepartementController(DepartementsRepository repo) {
-		this.departementRepo=repo;
+	DepartementDtoToDepartement mapper;
+	DepartementRepository depRepo;
+	public DepartementController(DepartementRepository repo,DepartementDtoToDepartement m) {
+		this.depRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getDepartementByIdMongo/{id}")
-public ResponseEntity<Departement> getDepartement( @PathVariable String id) {
-	if(departementRepo.existsByIdMongo(id)) {
-		Departement ab=departementRepo.findByIdMongo( id);
-		return new ResponseEntity<Departement>(ab,HttpStatus.OK);
+public ResponseEntity<DepartementDto> getDepartement( @PathVariable String id) {
+	if(depRepo.existsByIdMongo(id)) {
+		Departement ab=depRepo.findByIdMongo( id);
+		DepartementDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<DepartementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Departement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<DepartementDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getDepartementById/{id}")
-public ResponseEntity<Departement> getDepartement( @PathVariable int id) {
-	if(departementRepo.existsById(id)) {
-		Departement ab=departementRepo.findById( id);
-		return new ResponseEntity<Departement>(ab,HttpStatus.OK);
+public ResponseEntity<DepartementDto> getDepartement( @PathVariable int id) {
+	if(depRepo.existsById(id)) {
+		Departement ab=depRepo.findById( id);
+		DepartementDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<DepartementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Departement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<DepartementDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllDepartements")
-public ResponseEntity<List<Departement>> getDepartement( ) {
-	List<Departement> lab=departementRepo.findAll();
-	return new ResponseEntity<List<Departement>>(lab,HttpStatus.OK);
+public ResponseEntity<List<DepartementDto>> getDepartement( ) {
+	List<Departement> lab=depRepo.findAll();
+	List<DepartementDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<DepartementDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addDepartement")
-public ResponseEntity<Departement> addDepartement(@RequestBody Departement ab) {
-	if(!departementRepo.existsById(ab.getId())) {
-		departementRepo.save(ab);
-		return new ResponseEntity<Departement>(ab,HttpStatus.CREATED);
+public ResponseEntity<DepartementDto> addDepartement(@RequestBody DepartementDto dto) {
+	if(!depRepo.existsById(dto.getId())) {
+		Departement ab=mapper.dtoToObject(dto);
+		depRepo.save(ab);
+		return new ResponseEntity<DepartementDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Departement>(HttpStatus.CONFLICT);
+	return new ResponseEntity<DepartementDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateDepartement/{id}")
-public ResponseEntity<Departement> updateDepartement(@PathVariable int id,@RequestBody Departement ab) {
-	if(departementRepo.existsById(id)) {
-		departementRepo.save(ab);
-		return new ResponseEntity<Departement>(ab,HttpStatus.OK);
+public ResponseEntity<DepartementDto> updateDepartement(@PathVariable int id,@RequestBody DepartementDto dto) {
+	if(depRepo.existsById(id)) {
+		Departement ab=mapper.dtoToObject(dto);
+		depRepo.save(ab);
+		return new ResponseEntity<DepartementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Departement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<DepartementDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteDepartement/{id}")
-public ResponseEntity<Departement> deleteDepartement(@PathVariable int id) {
-	if(departementRepo.existsById(id)) {
-		Departement ab=departementRepo.deleteById(id);
-		return new ResponseEntity<Departement>(ab,HttpStatus.OK);
+public ResponseEntity<DepartementDto> deleteDepartement(@PathVariable int id) {
+	if(depRepo.existsById(id)) {
+		Departement ab=depRepo.deleteById(id);
+		DepartementDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<DepartementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Departement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<DepartementDto>(HttpStatus.NOT_FOUND);
 }
 
-
+	
 }

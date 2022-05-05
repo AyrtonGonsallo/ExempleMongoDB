@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.NewscategorieDto;
+import com.test.microservices.mappers.NewscategorieDtoToNewscategorie;
 import com.test.microservices.pojos.Newscategorie;
 import com.test.microservices.repositories.NewscategorieRepository;
 
 @RestController
 public class NewsCategorieController {
-	NewscategorieRepository newscategorieRepo;
-	public NewsCategorieController(NewscategorieRepository repo) {
-		this.newscategorieRepo=repo;
+	NewscategorieDtoToNewscategorie mapper;
+	NewscategorieRepository objetRepo;
+	public NewsCategorieController(NewscategorieRepository repo,NewscategorieDtoToNewscategorie m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getNewscategorieByIdMongo/{id}")
-public ResponseEntity<Newscategorie> getNewscategorie( @PathVariable String id) {
-	if(newscategorieRepo.existsByIdMongo(id)) {
-		Newscategorie ab=newscategorieRepo.findByIdMongo( id);
-		return new ResponseEntity<Newscategorie>(ab,HttpStatus.OK);
+public ResponseEntity<NewscategorieDto> getNewscategorie( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Newscategorie ab=objetRepo.findByIdMongo( id);
+		NewscategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<NewscategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Newscategorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NewscategorieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getNewscategorieById/{id}")
-public ResponseEntity<Newscategorie> getNewscategorie( @PathVariable int id) {
-	if(newscategorieRepo.existsById(id)) {
-		Newscategorie ab=newscategorieRepo.findById( id);
-		return new ResponseEntity<Newscategorie>(ab,HttpStatus.OK);
+public ResponseEntity<NewscategorieDto> getNewscategorie( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Newscategorie ab=objetRepo.findById( id);
+		NewscategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<NewscategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Newscategorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NewscategorieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllNewscategories")
-public ResponseEntity<List<Newscategorie>> getNewscategorie( ) {
-	List<Newscategorie> lab=newscategorieRepo.findAll();
-	return new ResponseEntity<List<Newscategorie>>(lab,HttpStatus.OK);
+public ResponseEntity<List<NewscategorieDto>> getNewscategorie( ) {
+	List<Newscategorie> lab=objetRepo.findAll();
+	List<NewscategorieDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<NewscategorieDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addNewscategorie")
-public ResponseEntity<Newscategorie> addNewscategorie(@RequestBody Newscategorie ab) {
-	if(!newscategorieRepo.existsById(ab.getId())) {
-		newscategorieRepo.save(ab);
-		return new ResponseEntity<Newscategorie>(ab,HttpStatus.CREATED);
+public ResponseEntity<NewscategorieDto> addNewscategorie(@RequestBody NewscategorieDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Newscategorie ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<NewscategorieDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Newscategorie>(HttpStatus.CONFLICT);
+	return new ResponseEntity<NewscategorieDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateNewscategorie/{id}")
-public ResponseEntity<Newscategorie> updateNewscategorie(@PathVariable int id,@RequestBody Newscategorie ab) {
-	if(newscategorieRepo.existsById(id)) {
-		newscategorieRepo.save(ab);
-		return new ResponseEntity<Newscategorie>(ab,HttpStatus.OK);
+public ResponseEntity<NewscategorieDto> updateNewscategorie(@PathVariable int id,@RequestBody NewscategorieDto dto) {
+	if(objetRepo.existsById(id)) {
+		Newscategorie ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<NewscategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Newscategorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NewscategorieDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteNewscategorie/{id}")
-public ResponseEntity<Newscategorie> deleteNewscategorie(@PathVariable int id) {
-	if(newscategorieRepo.existsById(id)) {
-		Newscategorie ab=newscategorieRepo.deleteById(id);
-		return new ResponseEntity<Newscategorie>(ab,HttpStatus.OK);
+public ResponseEntity<NewscategorieDto> deleteNewscategorie(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Newscategorie ab=objetRepo.deleteById(id);
+		NewscategorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<NewscategorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Newscategorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NewscategorieDto>(HttpStatus.NOT_FOUND);
 }
 
 

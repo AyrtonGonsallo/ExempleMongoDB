@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.test.microservices.enums.TypeChampionAdminExterneJournal;
@@ -20,6 +21,12 @@ public class Champion_admin_externe_journal {
 	@Field("ID")
 	public int id;
 	public TypeChampionAdminExterneJournal type;
+	@DocumentReference
+	private Champion champion2;
+	@DocumentReference
+	private User user2;
+	@DocumentReference
+	private Club club2;
 	public java.util.Date date;
 	public int user_id;
 	public int champion_id;

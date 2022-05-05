@@ -12,61 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.OptionDto;
+import com.test.microservices.mappers.OptionDtoToOption;
+import com.test.microservices.pojos.Option;
 import com.test.microservices.pojos.Option;
 import com.test.microservices.repositories.OptionsRepository;
 
 @RestController
 public class OptionsController {
-	OptionsRepository optionRepo;
-	public OptionsController(OptionsRepository repo) {
-		this.optionRepo=repo;
+	OptionsRepository optionsRepo;
+	OptionDtoToOption mapper;
+	public OptionsController(OptionsRepository repo,OptionDtoToOption m) {
+		this.optionsRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getOptionByIdMongo/{id}")
-public ResponseEntity<Option> getOption( @PathVariable String id) {
-	if(optionRepo.existsByIdMongo(id)) {
-		Option ab=optionRepo.findByIdMongo( id);
-		return new ResponseEntity<Option>(ab,HttpStatus.OK);
+public ResponseEntity<OptionDto> getOption( @PathVariable String id) {
+	if(optionsRepo.existsByIdMongo(id)) {
+		Option ab=optionsRepo.findByIdMongo( id);
+		OptionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<OptionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Option>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<OptionDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getOptionById/{id}")
-public ResponseEntity<Option> getOption( @PathVariable int id) {
-	if(optionRepo.existsById(id)) {
-		Option ab=optionRepo.findById( id);
-		return new ResponseEntity<Option>(ab,HttpStatus.OK);
+public ResponseEntity<OptionDto> getOption( @PathVariable int id) {
+	if(optionsRepo.existsById(id)) {
+		Option ab=optionsRepo.findById( id);
+		OptionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<OptionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Option>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<OptionDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllOptions")
-public ResponseEntity<List<Option>> getOption( ) {
-	List<Option> lab=optionRepo.findAll();
-	return new ResponseEntity<List<Option>>(lab,HttpStatus.OK);
+public ResponseEntity<List<OptionDto>> getOption( ) {
+	List<Option> lab=optionsRepo.findAll();
+	List<OptionDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<OptionDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addOption")
-public ResponseEntity<Option> addOption(@RequestBody Option ab) {
-	if(!optionRepo.existsById(ab.getId())) {
-		optionRepo.save(ab);
-		return new ResponseEntity<Option>(ab,HttpStatus.CREATED);
+public ResponseEntity<OptionDto> addOption(@RequestBody OptionDto dto) {
+	if(!optionsRepo.existsById(dto.getId())) {
+		Option ab=mapper.dtoToObject(dto);
+		optionsRepo.save(ab);
+		return new ResponseEntity<OptionDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Option>(HttpStatus.CONFLICT);
+	return new ResponseEntity<OptionDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateOption/{id}")
-public ResponseEntity<Option> updateOption(@PathVariable int id,@RequestBody Option ab) {
-	if(optionRepo.existsById(id)) {
-		optionRepo.save(ab);
-		return new ResponseEntity<Option>(ab,HttpStatus.OK);
+public ResponseEntity<OptionDto> updateOption(@PathVariable int id,@RequestBody OptionDto dto) {
+	if(optionsRepo.existsById(id)) {
+		Option ab=mapper.dtoToObject(dto);
+		optionsRepo.save(ab);
+		return new ResponseEntity<OptionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Option>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<OptionDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteOption/{id}")
-public ResponseEntity<Option> deleteOption(@PathVariable int id) {
-	if(optionRepo.existsById(id)) {
-		Option ab=optionRepo.deleteById(id);
-		return new ResponseEntity<Option>(ab,HttpStatus.OK);
+public ResponseEntity<OptionDto> deleteOption(@PathVariable int id) {
+	if(optionsRepo.existsById(id)) {
+		Option ab=optionsRepo.deleteById(id);
+		OptionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<OptionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Option>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<OptionDto>(HttpStatus.NOT_FOUND);
 }
-
 
 }

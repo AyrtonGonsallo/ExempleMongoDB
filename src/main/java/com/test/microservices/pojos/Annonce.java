@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
@@ -20,6 +21,10 @@ public class Annonce {
 	@Field("ID")
 	public int id;
 	public int sous_categorie_ID;
+	@DocumentReference
+	private Sous_categorie sous_categorie2;
+	@DocumentReference
+	private User user2;
 	public int User_ID;
 	public String Titre;
 	public String Descriptif;

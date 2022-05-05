@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -20,4 +21,8 @@ public class Pari_user {
 	public java.util.Date date;
 	public int user_id;
 	public int pari_comp_id;
+	@DocumentReference
+	private Pari_composition pari_composition2;
+	@DocumentReference
+	private User user2;
 }

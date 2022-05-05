@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.*;
@@ -15,7 +16,8 @@ public class Champion {
 	@Field("ID")
 	private int id;
 	private String IDold;
-	private String Nom;
+	@Field("Nom")
+	private String nom;
 	private char Sexe;
 	private String PaysID;
 	private String NvPaysID;
@@ -25,6 +27,14 @@ public class Champion {
 	private String DateNaissance;
 	private String LieuNaissance;
 	private String Grade;
+	@DocumentReference
+	private Grade grade2;
+	@DocumentReference
+	private Club club2;
+	@DocumentReference
+	private Pays pays2;
+	@DocumentReference
+	private Pays nvpays2;
 	private String Clubs;
 	private int Taille;
 	private int Poids;

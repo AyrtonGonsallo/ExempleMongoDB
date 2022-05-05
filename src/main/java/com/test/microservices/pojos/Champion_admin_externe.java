@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.test.microservices.enums.SituationAdminExterne;
@@ -24,6 +25,10 @@ public class Champion_admin_externe {
 	public String telephone;
 	public SituationAdminExterne situation;
 	public String video;
+	@DocumentReference
+	private Champion champion2;
+	@DocumentReference
+	private User user2;
 	public int user_id;
 	public int champion_id;
 	public String ip_creation;

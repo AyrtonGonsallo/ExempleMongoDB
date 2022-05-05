@@ -9,8 +9,8 @@ import com.test.microservices.pojos.Champion;
 
 public interface ChampionRepository extends MongoRepository<Champion, String> {
 	@Query("{Nom:'?0'}")
-    Champion findItemByName(String Nom);
-    
+    Champion findByNom(String Nom);
+    Boolean existsByNom(String Nom);
     @Query(value="{PaysID:'?0'}", fields="{'Nom' : 1, 'PaysID' : 1}")
     List<Champion> findAll(String PaysID);
     

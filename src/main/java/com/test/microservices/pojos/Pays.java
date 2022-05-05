@@ -15,7 +15,8 @@ public class Pays {
 	private String idMongo;
 	@Field("ID")
 	public int id;
-	public String Abreviation;
+	@Field("Abreviation")
+	public String abreviation;
 	public String NomPays;
 	public String Flag;
 }

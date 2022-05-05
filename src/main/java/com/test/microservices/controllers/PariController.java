@@ -12,62 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.PariDto;
+import com.test.microservices.mappers.PariDtoToPari;
 import com.test.microservices.pojos.Pari;
 import com.test.microservices.repositories.PariRepository;
 
 @RestController
 public class PariController {
-	PariRepository pRepo;
-	public PariController(PariRepository repo) {
-		this.pRepo=repo;
+	PariRepository pariRepo;
+	PariDtoToPari mapper;
+	public PariController(PariRepository repo,PariDtoToPari m) {
+		this.pariRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getPariByIdMongo/{id}")
-public ResponseEntity<Pari> getPari( @PathVariable String id) {
-	if(pRepo.existsByIdMongo(id)) {
-		Pari ab=pRepo.findByIdMongo( id);
-		return new ResponseEntity<Pari>(ab,HttpStatus.OK);
+public ResponseEntity<PariDto> getPari( @PathVariable String id) {
+	if(pariRepo.existsByIdMongo(id)) {
+		Pari ab=pariRepo.findByIdMongo( id);
+		PariDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PariDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PariDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getPariById/{id}")
-public ResponseEntity<Pari> getPari( @PathVariable int id) {
-	if(pRepo.existsById(id)) {
-		Pari ab=pRepo.findById( id);
-		return new ResponseEntity<Pari>(ab,HttpStatus.OK);
+public ResponseEntity<PariDto> getPari( @PathVariable int id) {
+	if(pariRepo.existsById(id)) {
+		Pari ab=pariRepo.findById( id);
+		PariDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PariDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PariDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllParis")
-public ResponseEntity<List<Pari>> getPari( ) {
-	List<Pari> lab=pRepo.findAll();
-	return new ResponseEntity<List<Pari>>(lab,HttpStatus.OK);
+public ResponseEntity<List<PariDto>> getPari( ) {
+	List<Pari> lab=pariRepo.findAll();
+	List<PariDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<PariDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addPari")
-public ResponseEntity<Pari> addPari(@RequestBody Pari ab) {
-	if(!pRepo.existsById(ab.getId())) {
-		pRepo.save(ab);
-		return new ResponseEntity<Pari>(ab,HttpStatus.CREATED);
+public ResponseEntity<PariDto> addPari(@RequestBody PariDto dto) {
+	if(!pariRepo.existsById(dto.getId())) {
+		Pari ab=mapper.dtoToObject(dto);
+		pariRepo.save(ab);
+		return new ResponseEntity<PariDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Pari>(HttpStatus.CONFLICT);
+	return new ResponseEntity<PariDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updatePari/{id}")
-public ResponseEntity<Pari> updatePari(@PathVariable int id,@RequestBody Pari ab) {
-	if(pRepo.existsById(id)) {
-		pRepo.save(ab);
-		return new ResponseEntity<Pari>(ab,HttpStatus.OK);
+public ResponseEntity<PariDto> updatePari(@PathVariable int id,@RequestBody PariDto dto) {
+	if(pariRepo.existsById(id)) {
+		Pari ab=mapper.dtoToObject(dto);
+		pariRepo.save(ab);
+		return new ResponseEntity<PariDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PariDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deletePari/{id}")
-public ResponseEntity<Pari> deletePari(@PathVariable int id) {
-	if(pRepo.existsById(id)) {
-		Pari ab=pRepo.deleteById(id);
-		return new ResponseEntity<Pari>(ab,HttpStatus.OK);
+public ResponseEntity<PariDto> deletePari(@PathVariable int id) {
+	if(pariRepo.existsById(id)) {
+		Pari ab=pariRepo.deleteById(id);
+		PariDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PariDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pari>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PariDto>(HttpStatus.NOT_FOUND);
 }
-
 
 }
 

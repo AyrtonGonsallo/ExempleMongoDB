@@ -12,61 +12,72 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.NationalityDto;
+import com.test.microservices.mappers.NationalityDtoToNationality;
 import com.test.microservices.pojos.Nationality;
 import com.test.microservices.repositories.NationalityRepository;
 
 @RestController
 public class NationalityController {
-	NationalityRepository nationalityRepo;
-	public NationalityController(NationalityRepository repo) {
-		this.nationalityRepo=repo;
+	NationalityDtoToNationality mapper;
+	NationalityRepository objetRepo;
+	public NationalityController(NationalityRepository repo,NationalityDtoToNationality m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getNationalityByIdMongo/{id}")
-public ResponseEntity<Nationality> getNationality( @PathVariable String id) {
-	if(nationalityRepo.existsByIdMongo(id)) {
-		Nationality ab=nationalityRepo.findByIdMongo( id);
-		return new ResponseEntity<Nationality>(ab,HttpStatus.OK);
+public ResponseEntity<NationalityDto> getNationality( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Nationality ab=objetRepo.findByIdMongo( id);
+		NationalityDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<NationalityDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Nationality>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NationalityDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getNationalityById/{id}")
-public ResponseEntity<Nationality> getNationality( @PathVariable int id) {
-	if(nationalityRepo.existsById(id)) {
-		Nationality ab=nationalityRepo.findById( id);
-		return new ResponseEntity<Nationality>(ab,HttpStatus.OK);
+public ResponseEntity<NationalityDto> getNationality( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Nationality ab=objetRepo.findById( id);
+		NationalityDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<NationalityDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Nationality>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NationalityDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllNationalitys")
-public ResponseEntity<List<Nationality>> getNationality( ) {
-	List<Nationality> lab=nationalityRepo.findAll();
-	return new ResponseEntity<List<Nationality>>(lab,HttpStatus.OK);
+public ResponseEntity<List<NationalityDto>> getNationality( ) {
+	List<Nationality> lab=objetRepo.findAll();
+	List<NationalityDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<NationalityDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addNationality")
-public ResponseEntity<Nationality> addNationality(@RequestBody Nationality ab) {
-	if(!nationalityRepo.existsById(ab.getId())) {
-		nationalityRepo.save(ab);
-		return new ResponseEntity<Nationality>(ab,HttpStatus.CREATED);
+public ResponseEntity<NationalityDto> addNationality(@RequestBody NationalityDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Nationality ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<NationalityDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Nationality>(HttpStatus.CONFLICT);
+	return new ResponseEntity<NationalityDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateNationality/{id}")
-public ResponseEntity<Nationality> updateNationality(@PathVariable int id,@RequestBody Nationality ab) {
-	if(nationalityRepo.existsById(id)) {
-		nationalityRepo.save(ab);
-		return new ResponseEntity<Nationality>(ab,HttpStatus.OK);
+public ResponseEntity<NationalityDto> updateNationality(@PathVariable int id,@RequestBody NationalityDto dto) {
+	if(objetRepo.existsById(id)) {
+		Nationality ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<NationalityDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Nationality>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NationalityDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteNationality/{id}")
-public ResponseEntity<Nationality> deleteNationality(@PathVariable int id) {
-	if(nationalityRepo.existsById(id)) {
-		Nationality ab=nationalityRepo.deleteById(id);
-		return new ResponseEntity<Nationality>(ab,HttpStatus.OK);
+public ResponseEntity<NationalityDto> deleteNationality(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Nationality ab=objetRepo.deleteById(id);
+		NationalityDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<NationalityDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Nationality>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<NationalityDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

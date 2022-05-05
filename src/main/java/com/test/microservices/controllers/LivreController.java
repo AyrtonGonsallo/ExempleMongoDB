@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.LivreDto;
+import com.test.microservices.mappers.LivreDtoToLivre;
 import com.test.microservices.pojos.Livre;
 import com.test.microservices.repositories.LivresRepository;
 
 @RestController
 public class LivreController {
-	LivresRepository livreRepo;
-	public LivreController(LivresRepository repo) {
-		this.livreRepo=repo;
+	LivreDtoToLivre mapper;
+	LivresRepository objetRepo;
+	public LivreController(LivresRepository repo,LivreDtoToLivre m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getLivreByIdMongo/{id}")
-public ResponseEntity<Livre> getLivre( @PathVariable String id) {
-	if(livreRepo.existsByIdMongo(id)) {
-		Livre ab=livreRepo.findByIdMongo( id);
-		return new ResponseEntity<Livre>(ab,HttpStatus.OK);
+public ResponseEntity<LivreDto> getLivre( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Livre ab=objetRepo.findByIdMongo( id);
+		LivreDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<LivreDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Livre>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<LivreDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getLivreById/{id}")
-public ResponseEntity<Livre> getLivre( @PathVariable int id) {
-	if(livreRepo.existsById(id)) {
-		Livre ab=livreRepo.findById( id);
-		return new ResponseEntity<Livre>(ab,HttpStatus.OK);
+public ResponseEntity<LivreDto> getLivre( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Livre ab=objetRepo.findById( id);
+		LivreDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<LivreDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Livre>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<LivreDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllLivres")
-public ResponseEntity<List<Livre>> getLivre( ) {
-	List<Livre> lab=livreRepo.findAll();
-	return new ResponseEntity<List<Livre>>(lab,HttpStatus.OK);
+public ResponseEntity<List<LivreDto>> getLivre( ) {
+	List<Livre> lab=objetRepo.findAll();
+	List<LivreDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<LivreDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addLivre")
-public ResponseEntity<Livre> addLivre(@RequestBody Livre ab) {
-	if(!livreRepo.existsById(ab.getId())) {
-		livreRepo.save(ab);
-		return new ResponseEntity<Livre>(ab,HttpStatus.CREATED);
+public ResponseEntity<LivreDto> addLivre(@RequestBody LivreDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Livre ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<LivreDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Livre>(HttpStatus.CONFLICT);
+	return new ResponseEntity<LivreDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateLivre/{id}")
-public ResponseEntity<Livre> updateLivre(@PathVariable int id,@RequestBody Livre ab) {
-	if(livreRepo.existsById(id)) {
-		livreRepo.save(ab);
-		return new ResponseEntity<Livre>(ab,HttpStatus.OK);
+public ResponseEntity<LivreDto> updateLivre(@PathVariable int id,@RequestBody LivreDto dto) {
+	if(objetRepo.existsById(id)) {
+		Livre ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<LivreDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Livre>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<LivreDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteLivre/{id}")
-public ResponseEntity<Livre> deleteLivre(@PathVariable int id) {
-	if(livreRepo.existsById(id)) {
-		Livre ab=livreRepo.deleteById(id);
-		return new ResponseEntity<Livre>(ab,HttpStatus.OK);
+public ResponseEntity<LivreDto> deleteLivre(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Livre ab=objetRepo.deleteById(id);
+		LivreDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<LivreDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Livre>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<LivreDto>(HttpStatus.NOT_FOUND);
 }
 
 

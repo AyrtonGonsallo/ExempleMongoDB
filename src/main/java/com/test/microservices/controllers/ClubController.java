@@ -12,60 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.ClubDto;
+import com.test.microservices.mappers.ClubDtoToClub;
 import com.test.microservices.pojos.Club;
-import com.test.microservices.repositories.ClubsRepository;
+import com.test.microservices.repositories.ClubRepository;
 @RestController
 public class ClubController {
-	ClubsRepository clubRepo;
-	public ClubController(ClubsRepository repo) {
+	ClubDtoToClub mapper;
+	ClubRepository clubRepo;
+	public ClubController(ClubRepository repo,ClubDtoToClub m) {
 		this.clubRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getClubByIdMongo/{id}")
-public ResponseEntity<Club> getClub( @PathVariable String id) {
+public ResponseEntity<ClubDto> getClub( @PathVariable String id) {
 	if(clubRepo.existsByIdMongo(id)) {
 		Club ab=clubRepo.findByIdMongo( id);
-		return new ResponseEntity<Club>(ab,HttpStatus.OK);
+		ClubDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ClubDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ClubDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getClubById/{id}")
-public ResponseEntity<Club> getClub( @PathVariable int id) {
+public ResponseEntity<ClubDto> getClub( @PathVariable int id) {
 	if(clubRepo.existsById(id)) {
 		Club ab=clubRepo.findById( id);
-		return new ResponseEntity<Club>(ab,HttpStatus.OK);
+		ClubDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ClubDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ClubDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllClubs")
-public ResponseEntity<List<Club>> getClub( ) {
+public ResponseEntity<List<ClubDto>> getClub( ) {
 	List<Club> lab=clubRepo.findAll();
-	return new ResponseEntity<List<Club>>(lab,HttpStatus.OK);
+	List<ClubDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<ClubDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addClub")
-public ResponseEntity<Club> addClub(@RequestBody Club ab) {
-	if(!clubRepo.existsById(ab.getId())) {
+public ResponseEntity<ClubDto> addClub(@RequestBody ClubDto dto) {
+	if(!clubRepo.existsById(dto.getId())) {
+		Club ab=mapper.dtoToObject(dto);
 		clubRepo.save(ab);
-		return new ResponseEntity<Club>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<ClubDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Club>(HttpStatus.CONFLICT);
+	return new ResponseEntity<ClubDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateClub/{id}")
-public ResponseEntity<Club> updateClub(@PathVariable int id,@RequestBody Club ab) {
+public ResponseEntity<ClubDto> updateClub(@PathVariable int id,@RequestBody ClubDto dto) {
 	if(clubRepo.existsById(id)) {
+		Club ab=mapper.dtoToObject(dto);
 		clubRepo.save(ab);
-		return new ResponseEntity<Club>(ab,HttpStatus.OK);
+		return new ResponseEntity<ClubDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ClubDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteClub/{id}")
-public ResponseEntity<Club> deleteClub(@PathVariable int id) {
+public ResponseEntity<ClubDto> deleteClub(@PathVariable int id) {
 	if(clubRepo.existsById(id)) {
 		Club ab=clubRepo.deleteById(id);
-		return new ResponseEntity<Club>(ab,HttpStatus.OK);
+		ClubDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ClubDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ClubDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

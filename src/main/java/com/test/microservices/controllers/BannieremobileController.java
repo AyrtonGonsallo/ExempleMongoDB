@@ -12,59 +12,69 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.BannieremobileDto;
+import com.test.microservices.mappers.BannieremobileDtoToBannieremobile;
 import com.test.microservices.pojos.Bannieremobile;
 import com.test.microservices.repositories.BmRepository;
 @RestController
 public class BannieremobileController {
 	BmRepository bmRepo;
-	public BannieremobileController(BmRepository repo) {
+	BannieremobileDtoToBannieremobile mapper;
+	public BannieremobileController(BmRepository repo,BannieremobileDtoToBannieremobile m) {
 		this.bmRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getBannieremobileByIdMongo/{id}")
-public ResponseEntity<Bannieremobile> getBannieremobile( @PathVariable String id) {
+public ResponseEntity<BannieremobileDto> getBannieremobile( @PathVariable String id) {
 	if(bmRepo.existsByIdMongo(id)) {
 		Bannieremobile ab=bmRepo.findByIdMongo( id);
-		return new ResponseEntity<Bannieremobile>(ab,HttpStatus.OK);
+		BannieremobileDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<BannieremobileDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Bannieremobile>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<BannieremobileDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getBannieremobileById/{id}")
-public ResponseEntity<Bannieremobile> getBannieremobile( @PathVariable int id) {
+public ResponseEntity<BannieremobileDto> getBannieremobile( @PathVariable int id) {
 	if(bmRepo.existsById(id)) {
 		Bannieremobile ab=bmRepo.findById( id);
-		return new ResponseEntity<Bannieremobile>(ab,HttpStatus.OK);
+		BannieremobileDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<BannieremobileDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Bannieremobile>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<BannieremobileDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllBannieremobiles")
-public ResponseEntity<List<Bannieremobile>> getBannieremobile( ) {
+public ResponseEntity<List<BannieremobileDto>> getBannieremobile( ) {
 	List<Bannieremobile> lab=bmRepo.findAll();
-	return new ResponseEntity<List<Bannieremobile>>(lab,HttpStatus.OK);
+	List<BannieremobileDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<BannieremobileDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addBannieremobile")
-public ResponseEntity<Bannieremobile> addBannieremobile(@RequestBody Bannieremobile ab) {
-	if(!bmRepo.existsById(ab.getId())) {
+public ResponseEntity<BannieremobileDto> addBannieremobile(@RequestBody BannieremobileDto dto) {
+	if(!bmRepo.existsById(dto.getId())) {
+		Bannieremobile ab=mapper.dtoToObject(dto);
 		bmRepo.save(ab);
-		return new ResponseEntity<Bannieremobile>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<BannieremobileDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Bannieremobile>(HttpStatus.CONFLICT);
+	return new ResponseEntity<BannieremobileDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateBannieremobile/{id}")
-public ResponseEntity<Bannieremobile> updateBannieremobile(@PathVariable int id,@RequestBody Bannieremobile ab) {
+public ResponseEntity<BannieremobileDto> updateBannieremobile(@PathVariable int id,@RequestBody BannieremobileDto dto) {
 	if(bmRepo.existsById(id)) {
+		Bannieremobile ab=mapper.dtoToObject(dto);
 		bmRepo.save(ab);
-		return new ResponseEntity<Bannieremobile>(ab,HttpStatus.OK);
+		return new ResponseEntity<BannieremobileDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Bannieremobile>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<BannieremobileDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteBannieremobile/{id}")
-public ResponseEntity<Bannieremobile> deleteBannieremobile(@PathVariable int id) {
+public ResponseEntity<BannieremobileDto> deleteBannieremobile(@PathVariable int id) {
 	if(bmRepo.existsById(id)) {
 		Bannieremobile ab=bmRepo.deleteById(id);
-		return new ResponseEntity<Bannieremobile>(ab,HttpStatus.OK);
+		BannieremobileDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<BannieremobileDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Bannieremobile>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<BannieremobileDto>(HttpStatus.NOT_FOUND);
 }
 
 }

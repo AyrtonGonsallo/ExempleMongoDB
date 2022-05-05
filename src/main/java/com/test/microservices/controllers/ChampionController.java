@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.ChampionDto;
+import com.test.microservices.mappers.ChampionDtoToChampion;
 import com.test.microservices.pojos.Champion;
 import com.test.microservices.repositories.ChampionRepository;
 
 @RestController
 public class ChampionController {
+	ChampionDtoToChampion mapper;
 	ChampionRepository championRepo;
-	public ChampionController(ChampionRepository repo) {
+	public ChampionController(ChampionRepository repo,ChampionDtoToChampion m) {
 		this.championRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getChampionByIdMongo/{id}")
-public ResponseEntity<Champion> getChampion( @PathVariable String id) {
+public ResponseEntity<ChampionDto> getChampion( @PathVariable String id) {
 	if(championRepo.existsByIdMongo(id)) {
 		Champion ab=championRepo.findByIdMongo( id);
-		return new ResponseEntity<Champion>(ab,HttpStatus.OK);
+		ChampionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ChampionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Champion>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ChampionDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getChampionById/{id}")
-public ResponseEntity<Champion> getChampion( @PathVariable int id) {
+public ResponseEntity<ChampionDto> getChampion( @PathVariable int id) {
 	if(championRepo.existsById(id)) {
 		Champion ab=championRepo.findById( id);
-		return new ResponseEntity<Champion>(ab,HttpStatus.OK);
+		ChampionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ChampionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Champion>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ChampionDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllChampions")
-public ResponseEntity<List<Champion>> getChampion( ) {
+public ResponseEntity<List<ChampionDto>> getChampion( ) {
 	List<Champion> lab=championRepo.findAll();
-	return new ResponseEntity<List<Champion>>(lab,HttpStatus.OK);
+	List<ChampionDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<ChampionDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addChampion")
-public ResponseEntity<Champion> addChampion(@RequestBody Champion ab) {
-	if(!championRepo.existsById(ab.getId())) {
+public ResponseEntity<ChampionDto> addChampion(@RequestBody ChampionDto dto) {
+	if(!championRepo.existsById(dto.getId())) {
+		Champion ab=mapper.dtoToObject(dto);
 		championRepo.save(ab);
-		return new ResponseEntity<Champion>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<ChampionDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Champion>(HttpStatus.CONFLICT);
+	return new ResponseEntity<ChampionDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateChampion/{id}")
-public ResponseEntity<Champion> updateChampion(@PathVariable int id,@RequestBody Champion ab) {
+public ResponseEntity<ChampionDto> updateChampion(@PathVariable int id,@RequestBody ChampionDto dto) {
 	if(championRepo.existsById(id)) {
+		Champion ab=mapper.dtoToObject(dto);
 		championRepo.save(ab);
-		return new ResponseEntity<Champion>(ab,HttpStatus.OK);
+		return new ResponseEntity<ChampionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Champion>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ChampionDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteChampion/{id}")
-public ResponseEntity<Champion> deleteChampion(@PathVariable int id) {
+public ResponseEntity<ChampionDto> deleteChampion(@PathVariable int id) {
 	if(championRepo.existsById(id)) {
 		Champion ab=championRepo.deleteById(id);
-		return new ResponseEntity<Champion>(ab,HttpStatus.OK);
+		ChampionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ChampionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Champion>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ChampionDto>(HttpStatus.NOT_FOUND);
 }
 
 

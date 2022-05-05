@@ -12,60 +12,69 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.EvequipeDto;
+import com.test.microservices.mappers.EvequipeDtoToEvequipe;
 import com.test.microservices.pojos.Evequipe;
 import com.test.microservices.repositories.EvequipeRepository;
 @RestController
 public class EvequipeController {
-	EvequipeRepository evequipeRepo;
-	public EvequipeController(EvequipeRepository repo) {
-		this.evequipeRepo=repo;
+	EvequipeDtoToEvequipe mapper;
+	EvequipeRepository objetRepo;
+	public EvequipeController(EvequipeRepository repo,EvequipeDtoToEvequipe m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getEvequipeByIdMongo/{id}")
-public ResponseEntity<Evequipe> getEvequipe( @PathVariable String id) {
-	if(evequipeRepo.existsByIdMongo(id)) {
-		Evequipe ab=evequipeRepo.findByIdMongo( id);
-		return new ResponseEntity<Evequipe>(ab,HttpStatus.OK);
+public ResponseEntity<EvequipeDto> getEvequipe( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Evequipe ab=objetRepo.findByIdMongo( id);
+		EvequipeDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvequipeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evequipe>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvequipeDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getEvequipeById/{id}")
-public ResponseEntity<Evequipe> getEvequipe( @PathVariable int id) {
-	if(evequipeRepo.existsById(id)) {
-		Evequipe ab=evequipeRepo.findById( id);
-		return new ResponseEntity<Evequipe>(ab,HttpStatus.OK);
+public ResponseEntity<EvequipeDto> getEvequipe( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evequipe ab=objetRepo.findById( id);
+		EvequipeDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvequipeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evequipe>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvequipeDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllEvequipes")
-public ResponseEntity<List<Evequipe>> getEvequipe( ) {
-	List<Evequipe> lab=evequipeRepo.findAll();
-	return new ResponseEntity<List<Evequipe>>(lab,HttpStatus.OK);
+public ResponseEntity<List<EvequipeDto>> getEvequipe( ) {
+	List<Evequipe> lab=objetRepo.findAll();
+	List<EvequipeDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<EvequipeDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addEvequipe")
-public ResponseEntity<Evequipe> addEvequipe(@RequestBody Evequipe ab) {
-	if(!evequipeRepo.existsById(ab.getId())) {
-		evequipeRepo.save(ab);
-		return new ResponseEntity<Evequipe>(ab,HttpStatus.CREATED);
+public ResponseEntity<EvequipeDto> addEvequipe(@RequestBody EvequipeDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Evequipe ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvequipeDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Evequipe>(HttpStatus.CONFLICT);
+	return new ResponseEntity<EvequipeDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateEvequipe/{id}")
-public ResponseEntity<Evequipe> updateEvequipe(@PathVariable int id,@RequestBody Evequipe ab) {
-	if(evequipeRepo.existsById(id)) {
-		evequipeRepo.save(ab);
-		return new ResponseEntity<Evequipe>(ab,HttpStatus.OK);
+public ResponseEntity<EvequipeDto> updateEvequipe(@PathVariable int id,@RequestBody EvequipeDto dto) {
+	if(objetRepo.existsById(id)) {
+		Evequipe ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvequipeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evequipe>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvequipeDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteEvequipe/{id}")
-public ResponseEntity<Evequipe> deleteEvequipe(@PathVariable int id) {
-	if(evequipeRepo.existsById(id)) {
-		Evequipe ab=evequipeRepo.deleteById(id);
-		return new ResponseEntity<Evequipe>(ab,HttpStatus.OK);
+public ResponseEntity<EvequipeDto> deleteEvequipe(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evequipe ab=objetRepo.deleteById(id);
+		EvequipeDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvequipeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evequipe>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvequipeDto>(HttpStatus.NOT_FOUND);
 }
-
 
 }

@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.ArticleDto;
+import com.test.microservices.mappers.ArticleDtoToArticle;
 import com.test.microservices.pojos.Article;
 import com.test.microservices.repositories.ArticleRepository;
 
 @RestController
 public class ArticleController {
 	ArticleRepository articleRepo;
-	public ArticleController(ArticleRepository repo) {
+	ArticleDtoToArticle mapper;
+	public ArticleController(ArticleRepository repo,ArticleDtoToArticle m) {
 		this.articleRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getArticleByIdMongo/{id}")
-public ResponseEntity<Article> getArticle( @PathVariable String id) {
+public ResponseEntity<ArticleDto> getArticle( @PathVariable String id) {
 	if(articleRepo.existsByIdMongo(id)) {
 		Article ab=articleRepo.findByIdMongo( id);
-		return new ResponseEntity<Article>(ab,HttpStatus.OK);
+		ArticleDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ArticleDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ArticleDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getArticleById/{id}")
-public ResponseEntity<Article> getArticle( @PathVariable int id) {
+public ResponseEntity<ArticleDto> getArticle( @PathVariable int id) {
 	if(articleRepo.existsById(id)) {
 		Article ab=articleRepo.findById( id);
-		return new ResponseEntity<Article>(ab,HttpStatus.OK);
+		ArticleDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ArticleDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ArticleDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllArticles")
-public ResponseEntity<List<Article>> getArticle( ) {
+public ResponseEntity<List<ArticleDto>> getArticle( ) {
 	List<Article> lab=articleRepo.findAll();
-	return new ResponseEntity<List<Article>>(lab,HttpStatus.OK);
+	List<ArticleDto>ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<ArticleDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addArticle")
-public ResponseEntity<Article> addArticle(@RequestBody Article ab) {
-	if(!articleRepo.existsById(ab.getId())) {
+public ResponseEntity<ArticleDto> addArticle(@RequestBody ArticleDto dto) {
+	if(!articleRepo.existsById(dto.getId())) {
+		Article ab=mapper.dtoToObject(dto);
 		articleRepo.save(ab);
-		return new ResponseEntity<Article>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<ArticleDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Article>(HttpStatus.CONFLICT);
+	return new ResponseEntity<ArticleDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateArticle/{id}")
-public ResponseEntity<Article> updateArticle(@PathVariable int id,@RequestBody Article ab) {
+public ResponseEntity<ArticleDto> updateArticle(@PathVariable int id,@RequestBody ArticleDto dto) {
 	if(articleRepo.existsById(id)) {
+		Article ab=mapper.dtoToObject(dto);
 		articleRepo.save(ab);
-		return new ResponseEntity<Article>(ab,HttpStatus.OK);
+		return new ResponseEntity<ArticleDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ArticleDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteArticle/{id}")
-public ResponseEntity<Article> deleteArticle(@PathVariable int id) {
+public ResponseEntity<ArticleDto> deleteArticle(@PathVariable int id) {
 	if(articleRepo.existsById(id)) {
 		Article ab=articleRepo.deleteById(id);
-		return new ResponseEntity<Article>(ab,HttpStatus.OK);
+		ArticleDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<ArticleDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<ArticleDto>(HttpStatus.NOT_FOUND);
 }
 
 }

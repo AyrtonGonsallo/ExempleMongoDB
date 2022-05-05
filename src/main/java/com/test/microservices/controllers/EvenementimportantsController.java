@@ -12,60 +12,68 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.test.microservices.pojos.Evenementimportants;
-import com.test.microservices.repositories.EvenementimportantsRepository;
+import com.test.microservices.dto.EvenementimportantsDto;
+import com.test.microservices.mappers.EvenementimportantsDtoToEvenementimportants;
+import com.test.microservices.pojos.Evenementimportant;
+import com.test.microservices.repositories.EvenementimportantRepository;
 @RestController
 public class EvenementimportantsController {
-	EvenementimportantsRepository evenementimportantsRepo;
-	public EvenementimportantsController(EvenementimportantsRepository repo) {
-		this.evenementimportantsRepo=repo;
+	EvenementimportantsDtoToEvenementimportants mapper;
+	EvenementimportantRepository objetRepo;
+	public EvenementimportantsController(EvenementimportantRepository repo,EvenementimportantsDtoToEvenementimportants m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getEvenementimportantsByIdMongo/{id}")
-public ResponseEntity<Evenementimportants> getEvenementimportants( @PathVariable String id) {
-	if(evenementimportantsRepo.existsByIdMongo(id)) {
-		Evenementimportants ab=evenementimportantsRepo.findByIdMongo( id);
-		return new ResponseEntity<Evenementimportants>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementimportantsDto> getEvenementimportants( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Evenementimportant ab=objetRepo.findByIdMongo( id);
+		EvenementimportantsDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvenementimportantsDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenementimportants>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementimportantsDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getEvenementimportantsById/{id}")
-public ResponseEntity<Evenementimportants> getEvenementimportants( @PathVariable int id) {
-	if(evenementimportantsRepo.existsById(id)) {
-		Evenementimportants ab=evenementimportantsRepo.findById( id);
-		return new ResponseEntity<Evenementimportants>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementimportantsDto> getEvenementimportants( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evenementimportant ab=objetRepo.findById( id);
+		EvenementimportantsDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvenementimportantsDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenementimportants>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementimportantsDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllEvenementimportantss")
-public ResponseEntity<List<Evenementimportants>> getEvenementimportants( ) {
-	List<Evenementimportants> lab=evenementimportantsRepo.findAll();
-	return new ResponseEntity<List<Evenementimportants>>(lab,HttpStatus.OK);
+public ResponseEntity<List<EvenementimportantsDto>> getEvenementimportants( ) {
+	List<Evenementimportant> lab=objetRepo.findAll();
+	List<EvenementimportantsDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<EvenementimportantsDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addEvenementimportants")
-public ResponseEntity<Evenementimportants> addEvenementimportants(@RequestBody Evenementimportants ab) {
-	if(!evenementimportantsRepo.existsById(ab.getId())) {
-		evenementimportantsRepo.save(ab);
-		return new ResponseEntity<Evenementimportants>(ab,HttpStatus.CREATED);
+public ResponseEntity<EvenementimportantsDto> addEvenementimportants(@RequestBody EvenementimportantsDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Evenementimportant ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvenementimportantsDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Evenementimportants>(HttpStatus.CONFLICT);
+	return new ResponseEntity<EvenementimportantsDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateEvenementimportants/{id}")
-public ResponseEntity<Evenementimportants> updateEvenementimportants(@PathVariable int id,@RequestBody Evenementimportants ab) {
-	if(evenementimportantsRepo.existsById(id)) {
-		evenementimportantsRepo.save(ab);
-		return new ResponseEntity<Evenementimportants>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementimportantsDto> updateEvenementimportants(@PathVariable int id,@RequestBody EvenementimportantsDto dto) {
+	if(objetRepo.existsById(id)) {
+		Evenementimportant ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvenementimportantsDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenementimportants>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementimportantsDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteEvenementimportants/{id}")
-public ResponseEntity<Evenementimportants> deleteEvenementimportants(@PathVariable int id) {
-	if(evenementimportantsRepo.existsById(id)) {
-		Evenementimportants ab=evenementimportantsRepo.deleteById(id);
-		return new ResponseEntity<Evenementimportants>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementimportantsDto> deleteEvenementimportants(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evenementimportant ab=objetRepo.deleteById(id);
+		EvenementimportantsDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvenementimportantsDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenementimportants>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementimportantsDto>(HttpStatus.NOT_FOUND);
 }
-
-
 }

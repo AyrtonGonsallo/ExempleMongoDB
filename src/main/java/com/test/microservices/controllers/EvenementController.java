@@ -12,60 +12,68 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.EvenementDto;
+import com.test.microservices.mappers.EvenementDtoToEvenement;
 import com.test.microservices.pojos.Evenement;
-import com.test.microservices.repositories.EvenementsRepository;
+import com.test.microservices.repositories.EvenementRepository;
 @RestController
 public class EvenementController {
-	EvenementsRepository evenementRepo;
-	public EvenementController(EvenementsRepository repo) {
-		this.evenementRepo=repo;
-		// TODO Auto-generated constructor stub
+	EvenementDtoToEvenement mapper;
+	EvenementRepository objetRepo;
+	public EvenementController(EvenementRepository repo,EvenementDtoToEvenement m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 	}
 @GetMapping("/getEvenementByIdMongo/{id}")
-public ResponseEntity<Evenement> getEvenement( @PathVariable String id) {
-	if(evenementRepo.existsByIdMongo(id)) {
-		Evenement ab=evenementRepo.findByIdMongo( id);
-		return new ResponseEntity<Evenement>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementDto> getEvenement( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Evenement ab=objetRepo.findByIdMongo( id);
+		EvenementDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvenementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getEvenementById/{id}")
-public ResponseEntity<Evenement> getEvenement( @PathVariable int id) {
-	if(evenementRepo.existsById(id)) {
-		Evenement ab=evenementRepo.findById( id);
-		return new ResponseEntity<Evenement>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementDto> getEvenement( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evenement ab=objetRepo.findById( id);
+		EvenementDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvenementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllEvenements")
-public ResponseEntity<List<Evenement>> getEvenement( ) {
-	List<Evenement> lab=evenementRepo.findAll();
-	return new ResponseEntity<List<Evenement>>(lab,HttpStatus.OK);
+public ResponseEntity<List<EvenementDto>> getEvenement( ) {
+	List<Evenement> lab=objetRepo.findAll();
+	List<EvenementDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<EvenementDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addEvenement")
-public ResponseEntity<Evenement> addEvenement(@RequestBody Evenement ab) {
-	if(!evenementRepo.existsById(ab.getId())) {
-		evenementRepo.save(ab);
-		return new ResponseEntity<Evenement>(ab,HttpStatus.CREATED);
+public ResponseEntity<EvenementDto> addEvenement(@RequestBody EvenementDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Evenement ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvenementDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Evenement>(HttpStatus.CONFLICT);
+	return new ResponseEntity<EvenementDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateEvenement/{id}")
-public ResponseEntity<Evenement> updateEvenement(@PathVariable int id,@RequestBody Evenement ab) {
-	if(evenementRepo.existsById(id)) {
-		evenementRepo.save(ab);
-		return new ResponseEntity<Evenement>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementDto> updateEvenement(@PathVariable int id,@RequestBody EvenementDto dto) {
+	if(objetRepo.existsById(id)) {
+		Evenement ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvenementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteEvenement/{id}")
-public ResponseEntity<Evenement> deleteEvenement(@PathVariable int id) {
-	if(evenementRepo.existsById(id)) {
-		Evenement ab=evenementRepo.deleteById(id);
-		return new ResponseEntity<Evenement>(ab,HttpStatus.OK);
+public ResponseEntity<EvenementDto> deleteEvenement(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evenement ab=objetRepo.deleteById(id);
+		EvenementDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvenementDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evenement>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvenementDto>(HttpStatus.NOT_FOUND);
 }
-
 
 }

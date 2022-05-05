@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.AnnonceDto;
+import com.test.microservices.mappers.AnnonceDtoToAnnonce;
 import com.test.microservices.pojos.Annonce;
 import com.test.microservices.repositories.AnnonceRepository;
 
 @RestController
 public class AnnonceController {
 	AnnonceRepository annonceRepo;
-	public AnnonceController(AnnonceRepository repo) {
+	AnnonceDtoToAnnonce mapper;
+	public AnnonceController(AnnonceRepository repo,AnnonceDtoToAnnonce m) {
 		this.annonceRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getAnnonceByIdMongo/{id}")
-public ResponseEntity<Annonce> getAnnonce( @PathVariable String id) {
+public ResponseEntity<AnnonceDto> getAnnonce( @PathVariable String id) {
 	if(annonceRepo.existsByIdMongo(id)) {
 		Annonce ab=annonceRepo.findByIdMongo( id);
-		return new ResponseEntity<Annonce>(ab,HttpStatus.OK);
+		AnnonceDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<AnnonceDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Annonce>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<AnnonceDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAnnonceById/{id}")
-public ResponseEntity<Annonce> getAnnonce( @PathVariable int id) {
+public ResponseEntity<AnnonceDto> getAnnonce( @PathVariable int id) {
 	if(annonceRepo.existsById(id)) {
 		Annonce ab=annonceRepo.findById( id);
-		return new ResponseEntity<Annonce>(ab,HttpStatus.OK);
+		AnnonceDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<AnnonceDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Annonce>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<AnnonceDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllAnnonces")
-public ResponseEntity<List<Annonce>> getAnnonce( ) {
+public ResponseEntity<List<AnnonceDto>> getAnnonce( ) {
 	List<Annonce> lab=annonceRepo.findAll();
-	return new ResponseEntity<List<Annonce>>(lab,HttpStatus.OK);
+	List<AnnonceDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<AnnonceDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addAnnonce")
-public ResponseEntity<Annonce> addAnnonce(@RequestBody Annonce ab) {
-	if(!annonceRepo.existsById(ab.getId())) {
+public ResponseEntity<AnnonceDto> addAnnonce(@RequestBody AnnonceDto dto) {
+	if(!annonceRepo.existsById(dto.getId())) {
+		Annonce ab=mapper.dtoToObject(dto);
 		annonceRepo.save(ab);
-		return new ResponseEntity<Annonce>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<AnnonceDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Annonce>(HttpStatus.CONFLICT);
+	return new ResponseEntity<AnnonceDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateAnnonce/{id}")
-public ResponseEntity<Annonce> updateAnnonce(@PathVariable int id,@RequestBody Annonce ab) {
+public ResponseEntity<AnnonceDto> updateAnnonce(@PathVariable int id,@RequestBody AnnonceDto dto) {
 	if(annonceRepo.existsById(id)) {
+		Annonce ab=mapper.dtoToObject(dto);
 		annonceRepo.save(ab);
-		return new ResponseEntity<Annonce>(ab,HttpStatus.OK);
+		return new ResponseEntity<AnnonceDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Annonce>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<AnnonceDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteAnnonce/{id}")
-public ResponseEntity<Annonce> deleteAnnonce(@PathVariable int id) {
+public ResponseEntity<AnnonceDto> deleteAnnonce(@PathVariable int id) {
 	if(annonceRepo.existsById(id)) {
 		Annonce ab=annonceRepo.deleteById(id);
-		return new ResponseEntity<Annonce>(ab,HttpStatus.OK);
+		AnnonceDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<AnnonceDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Annonce>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<AnnonceDto>(HttpStatus.NOT_FOUND);
 }
 
 }

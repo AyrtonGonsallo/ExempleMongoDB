@@ -34,3 +34,8 @@ db.champion_popularite1.updateMany({},{$set:{"date2" : ISODate("2022-04-23T22:00
 db.champion_popularite1.updateMany({},{$unset:{"date" : ""}})
 db.champion_popularite1.updateMany({"date" : "0000-00-00 00:00:00"},{$set:{"date" : "2022-04-20 14:25:00"}})
 db.champion_popularite.find({"date" : "0000-00-00 00:00:00"},{})
+
+{$or:[{"CategorieAge":{$gte:0}}]}
+
+// regex caracteres speciaux
+{"Grade" : {$regex:"\\?\\?", '$options' : 'i'}}

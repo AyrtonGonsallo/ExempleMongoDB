@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +16,8 @@ public class News_galerie {
 	private String idMongo;
 	@Field("ID")
 	private int id;
+	@DocumentReference
+	private News news2;
 	public int news_id;
 	public String path;
 }

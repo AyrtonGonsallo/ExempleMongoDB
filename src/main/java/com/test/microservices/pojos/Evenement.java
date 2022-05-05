@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.test.microservices.enums.CategorieEvenementSexe;
@@ -37,5 +38,11 @@ public class Evenement {
 	public String PaysID;
 	public int CategorieID;
 	public int CategorieageID;
+	@DocumentReference
+	private Evcategorieage evcategorieage2;
+	@DocumentReference
+	private Evcategorieevenement evcategorieevenement2;
+	@DocumentReference
+	private Pays pays2;
 	public int compteur;
 }

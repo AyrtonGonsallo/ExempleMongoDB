@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 public class MembreDto {
 	private String idMongo;
 	public int id;
+	public int user_id;
 	public String date_naissance;
 	public java.util.Date date_naissance2;
 	public String grade;

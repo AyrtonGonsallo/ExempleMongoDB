@@ -22,6 +22,12 @@ public class Image {
 	public int News_id;
 	public int Galerie_id;
 	public int Technique_id;
+	private Evenement evenement2;
+	private Champion champion2;
+	private Champion Champion22;
+	private News news2;
+	private Galerie galerie2;
+	private Technique technique2;
 	public String Description;
 	public Boolean actif;
 }

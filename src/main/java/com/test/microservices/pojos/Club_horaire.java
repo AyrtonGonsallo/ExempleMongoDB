@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
@@ -20,6 +21,8 @@ public class Club_horaire {
 	@Field("id")
 	private int id;
 	public int id_club;
+	@DocumentReference
+	private Club club2;
 	public String jour;
 	public String h_deb;
 	public String h_fin;

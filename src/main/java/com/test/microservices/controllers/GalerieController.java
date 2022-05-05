@@ -12,60 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.GalerieDto;
+import com.test.microservices.mappers.GalerieDtoToGalerie;
 import com.test.microservices.pojos.Galerie;
-import com.test.microservices.repositories.GaleriesRepository;
+import com.test.microservices.repositories.GalerieRepository;
 @RestController
 public class GalerieController {
-	GaleriesRepository galerieRepo;
-	public GalerieController(GaleriesRepository repo) {
-		this.galerieRepo=repo;
+	GalerieDtoToGalerie mapper;
+	GalerieRepository objetRepo;
+	public GalerieController(GalerieRepository repo,GalerieDtoToGalerie m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getGalerieByIdMongo/{id}")
-public ResponseEntity<Galerie> getGalerie( @PathVariable String id) {
-	if(galerieRepo.existsByIdMongo(id)) {
-		Galerie ab=galerieRepo.findByIdMongo( id);
-		return new ResponseEntity<Galerie>(ab,HttpStatus.OK);
+public ResponseEntity<GalerieDto> getGalerie( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Galerie ab=objetRepo.findByIdMongo( id);
+		GalerieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<GalerieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Galerie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GalerieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getGalerieById/{id}")
-public ResponseEntity<Galerie> getGalerie( @PathVariable int id) {
-	if(galerieRepo.existsById(id)) {
-		Galerie ab=galerieRepo.findById( id);
-		return new ResponseEntity<Galerie>(ab,HttpStatus.OK);
+public ResponseEntity<GalerieDto> getGalerie( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Galerie ab=objetRepo.findById( id);
+		GalerieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<GalerieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Galerie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GalerieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllGaleries")
-public ResponseEntity<List<Galerie>> getGalerie( ) {
-	List<Galerie> lab=galerieRepo.findAll();
-	return new ResponseEntity<List<Galerie>>(lab,HttpStatus.OK);
+public ResponseEntity<List<GalerieDto>> getGalerie( ) {
+	List<Galerie> lab=objetRepo.findAll();
+	List<GalerieDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<GalerieDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addGalerie")
-public ResponseEntity<Galerie> addGalerie(@RequestBody Galerie ab) {
-	if(!galerieRepo.existsById(ab.getId())) {
-		galerieRepo.save(ab);
-		return new ResponseEntity<Galerie>(ab,HttpStatus.CREATED);
+public ResponseEntity<GalerieDto> addGalerie(@RequestBody GalerieDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Galerie ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<GalerieDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Galerie>(HttpStatus.CONFLICT);
+	return new ResponseEntity<GalerieDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateGalerie/{id}")
-public ResponseEntity<Galerie> updateGalerie(@PathVariable int id,@RequestBody Galerie ab) {
-	if(galerieRepo.existsById(id)) {
-		galerieRepo.save(ab);
-		return new ResponseEntity<Galerie>(ab,HttpStatus.OK);
+public ResponseEntity<GalerieDto> updateGalerie(@PathVariable int id,@RequestBody GalerieDto dto) {
+	if(objetRepo.existsById(id)) {
+		Galerie ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<GalerieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Galerie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GalerieDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteGalerie/{id}")
-public ResponseEntity<Galerie> deleteGalerie(@PathVariable int id) {
-	if(galerieRepo.existsById(id)) {
-		Galerie ab=galerieRepo.deleteById(id);
-		return new ResponseEntity<Galerie>(ab,HttpStatus.OK);
+public ResponseEntity<GalerieDto> deleteGalerie(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Galerie ab=objetRepo.deleteById(id);
+		GalerieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<GalerieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Galerie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GalerieDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

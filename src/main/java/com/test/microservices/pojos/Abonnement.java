@@ -4,6 +4,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +21,11 @@ public class Abonnement {
 	public String idMongo;
 	@Field("id")
 	private int id;
-	public int user;
-	public int champion;
-	public java.util.Date date_creation;
+	private int user;
+	private int champion;
+	private java.util.Date date_creation;
+	@DocumentReference
+	private Champion champion2;
+	@DocumentReference
+	private User user2;
 }

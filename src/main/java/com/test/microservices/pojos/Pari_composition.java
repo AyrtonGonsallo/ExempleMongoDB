@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.test.microservices.enums.Sexe;
@@ -24,4 +25,6 @@ public class Pari_composition {
 	public String podium_final;
 	public String premier_final;
 	public int pari_id;
+	@DocumentReference
+	private Pari pari2;
 }

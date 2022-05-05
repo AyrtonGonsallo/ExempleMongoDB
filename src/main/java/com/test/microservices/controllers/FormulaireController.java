@@ -12,60 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.FormulaireDto;
+import com.test.microservices.mappers.FormulaireDtoToFormulaire;
 import com.test.microservices.pojos.Formulaire;
 import com.test.microservices.repositories.FormulaireRepository;
 @RestController
 public class FormulaireController {
-	FormulaireRepository formulaireRepo;
-	public FormulaireController(FormulaireRepository repo) {
-		this.formulaireRepo=repo;
+	FormulaireDtoToFormulaire mapper;
+	FormulaireRepository objetRepo;
+	public FormulaireController(FormulaireRepository repo,FormulaireDtoToFormulaire m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getFormulaireByIdMongo/{id}")
-public ResponseEntity<Formulaire> getFormulaire( @PathVariable String id) {
-	if(formulaireRepo.existsByIdMongo(id)) {
-		Formulaire ab=formulaireRepo.findByIdMongo( id);
-		return new ResponseEntity<Formulaire>(ab,HttpStatus.OK);
+public ResponseEntity<FormulaireDto> getFormulaire( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Formulaire ab=objetRepo.findByIdMongo( id);
+		FormulaireDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<FormulaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Formulaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<FormulaireDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getFormulaireById/{id}")
-public ResponseEntity<Formulaire> getFormulaire( @PathVariable int id) {
-	if(formulaireRepo.existsById(id)) {
-		Formulaire ab=formulaireRepo.findById( id);
-		return new ResponseEntity<Formulaire>(ab,HttpStatus.OK);
+public ResponseEntity<FormulaireDto> getFormulaire( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Formulaire ab=objetRepo.findById( id);
+		FormulaireDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<FormulaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Formulaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<FormulaireDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllFormulaires")
-public ResponseEntity<List<Formulaire>> getFormulaire( ) {
-	List<Formulaire> lab=formulaireRepo.findAll();
-	return new ResponseEntity<List<Formulaire>>(lab,HttpStatus.OK);
+public ResponseEntity<List<FormulaireDto>> getFormulaire( ) {
+	List<Formulaire> lab=objetRepo.findAll();
+	List<FormulaireDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<FormulaireDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addFormulaire")
-public ResponseEntity<Formulaire> addFormulaire(@RequestBody Formulaire ab) {
-	if(!formulaireRepo.existsById(ab.getId())) {
-		formulaireRepo.save(ab);
-		return new ResponseEntity<Formulaire>(ab,HttpStatus.CREATED);
+public ResponseEntity<FormulaireDto> addFormulaire(@RequestBody FormulaireDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Formulaire ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<FormulaireDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Formulaire>(HttpStatus.CONFLICT);
+	return new ResponseEntity<FormulaireDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateFormulaire/{id}")
-public ResponseEntity<Formulaire> updateFormulaire(@PathVariable int id,@RequestBody Formulaire ab) {
-	if(formulaireRepo.existsById(id)) {
-		formulaireRepo.save(ab);
-		return new ResponseEntity<Formulaire>(ab,HttpStatus.OK);
+public ResponseEntity<FormulaireDto> updateFormulaire(@PathVariable int id,@RequestBody FormulaireDto dto) {
+	if(objetRepo.existsById(id)) {
+		Formulaire ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<FormulaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Formulaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<FormulaireDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteFormulaire/{id}")
-public ResponseEntity<Formulaire> deleteFormulaire(@PathVariable int id) {
-	if(formulaireRepo.existsById(id)) {
-		Formulaire ab=formulaireRepo.deleteById(id);
-		return new ResponseEntity<Formulaire>(ab,HttpStatus.OK);
+public ResponseEntity<FormulaireDto> deleteFormulaire(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Formulaire ab=objetRepo.deleteById(id);
+		FormulaireDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<FormulaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Formulaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<FormulaireDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

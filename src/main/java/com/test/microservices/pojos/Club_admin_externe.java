@@ -4,6 +4,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,10 @@ public class Club_admin_externe {
 	public String fonction;
 	public int user_id;
 	public int club_id;
+	@DocumentReference
+	private Club club2;
+	@DocumentReference
+	private User user2;
 	public String ip_creation;
 	public String date_creation;
 	public String ip_mod;

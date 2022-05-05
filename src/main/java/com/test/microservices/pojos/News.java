@@ -38,4 +38,8 @@ public class News {
 	public int evenementID;
 	public int categorieID;
 	public String admin;
+	private Admin admin2;
+	private Newscategorie Newscategorie2;
+	private Evenement evenement2;
+	
 }

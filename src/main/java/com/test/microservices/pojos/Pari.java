@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -21,4 +22,6 @@ public class Pari {
 	public Boolean actif;
 	public Boolean corrige;
 	public int evenement_id;
+	@DocumentReference
+	private Evenement evenement2;
 }

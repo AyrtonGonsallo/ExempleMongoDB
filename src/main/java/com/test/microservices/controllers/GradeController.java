@@ -12,60 +12,70 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.GradeDto;
+import com.test.microservices.mappers.GradeDtoToGrade;
 import com.test.microservices.pojos.Grade;
-import com.test.microservices.repositories.GradesRepository;
+import com.test.microservices.repositories.GradeRepository;
 
 @RestController
 public class GradeController {
-	GradesRepository gradeRepo;
-	public GradeController(GradesRepository repo) {
-		this.gradeRepo=repo;
+	GradeDtoToGrade mapper;
+	GradeRepository objetRepo;
+	public GradeController(GradeRepository repo,GradeDtoToGrade m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getGradeByIdMongo/{id}")
-public ResponseEntity<Grade> getGrade( @PathVariable String id) {
-	if(gradeRepo.existsByIdMongo(id)) {
-		Grade ab=gradeRepo.findByIdMongo( id);
-		return new ResponseEntity<Grade>(ab,HttpStatus.OK);
+public ResponseEntity<GradeDto> getGrade( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Grade ab=objetRepo.findByIdMongo( id);
+		GradeDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<GradeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Grade>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GradeDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getGradeById/{id}")
-public ResponseEntity<Grade> getGrade( @PathVariable int id) {
-	if(gradeRepo.existsById(id)) {
-		Grade ab=gradeRepo.findById( id);
-		return new ResponseEntity<Grade>(ab,HttpStatus.OK);
+public ResponseEntity<GradeDto> getGrade( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Grade ab=objetRepo.findById( id);
+		GradeDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<GradeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Grade>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GradeDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllGrades")
-public ResponseEntity<List<Grade>> getGrade( ) {
-	List<Grade> lab=gradeRepo.findAll();
-	return new ResponseEntity<List<Grade>>(lab,HttpStatus.OK);
+public ResponseEntity<List<GradeDto>> getGrade( ) {
+	List<Grade> lab=objetRepo.findAll();
+	List<GradeDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<GradeDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addGrade")
-public ResponseEntity<Grade> addGrade(@RequestBody Grade ab) {
-	if(!gradeRepo.existsById(ab.getId())) {
-		gradeRepo.save(ab);
-		return new ResponseEntity<Grade>(ab,HttpStatus.CREATED);
+public ResponseEntity<GradeDto> addGrade(@RequestBody GradeDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Grade ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<GradeDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Grade>(HttpStatus.CONFLICT);
+	return new ResponseEntity<GradeDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateGrade/{id}")
-public ResponseEntity<Grade> updateGrade(@PathVariable int id,@RequestBody Grade ab) {
-	if(gradeRepo.existsById(id)) {
-		gradeRepo.save(ab);
-		return new ResponseEntity<Grade>(ab,HttpStatus.OK);
+public ResponseEntity<GradeDto> updateGrade(@PathVariable int id,@RequestBody GradeDto dto) {
+	if(objetRepo.existsById(id)) {
+		Grade ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<GradeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Grade>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GradeDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteGrade/{id}")
-public ResponseEntity<Grade> deleteGrade(@PathVariable int id) {
-	if(gradeRepo.existsById(id)) {
-		Grade ab=gradeRepo.deleteById(id);
-		return new ResponseEntity<Grade>(ab,HttpStatus.OK);
+public ResponseEntity<GradeDto> deleteGrade(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Grade ab=objetRepo.deleteById(id);
+		GradeDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<GradeDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Grade>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<GradeDto>(HttpStatus.NOT_FOUND);
 }
 }
 

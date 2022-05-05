@@ -12,60 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.Article_imgDto;
+import com.test.microservices.mappers.Article_imgDtoToArticle_img;
 import com.test.microservices.pojos.Article_img;
 import com.test.microservices.repositories.Article_imgRepository;
 
 @RestController
 public class Article_imgController {
 	Article_imgRepository article_imgRepo;
-	public Article_imgController(Article_imgRepository repo) {
+	Article_imgDtoToArticle_img mapper;
+	public Article_imgController(Article_imgRepository repo,Article_imgDtoToArticle_img m) {
 		this.article_imgRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getArticle_imgByIdMongo/{id}")
-public ResponseEntity<Article_img> getArticle_img( @PathVariable String id) {
+public ResponseEntity<Article_imgDto> getArticle_img( @PathVariable String id) {
 	if(article_imgRepo.existsByIdMongo(id)) {
 		Article_img ab=article_imgRepo.findByIdMongo( id);
-		return new ResponseEntity<Article_img>(ab,HttpStatus.OK);
+		Article_imgDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Article_imgDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article_img>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Article_imgDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getArticle_imgById/{id}")
-public ResponseEntity<Article_img> getArticle_img( @PathVariable int id) {
+public ResponseEntity<Article_imgDto> getArticle_img( @PathVariable int id) {
 	if(article_imgRepo.existsById(id)) {
 		Article_img ab=article_imgRepo.findById( id);
-		return new ResponseEntity<Article_img>(ab,HttpStatus.OK);
+		Article_imgDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Article_imgDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article_img>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Article_imgDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllArticle_imgs")
-public ResponseEntity<List<Article_img>> getArticle_img( ) {
+public ResponseEntity<List<Article_imgDto>> getArticle_img( ) {
 	List<Article_img> lab=article_imgRepo.findAll();
-	return new ResponseEntity<List<Article_img>>(lab,HttpStatus.OK);
+	List<Article_imgDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<Article_imgDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addArticle_img")
-public ResponseEntity<Article_img> addArticle_img(@RequestBody Article_img ab) {
-	if(!article_imgRepo.existsById(ab.getId())) {
+public ResponseEntity<Article_imgDto> addArticle_img(@RequestBody Article_imgDto dto) {
+	if(!article_imgRepo.existsById(dto.getId())) {
+		Article_img ab=mapper.dtoToObject(dto);
 		article_imgRepo.save(ab);
-		return new ResponseEntity<Article_img>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<Article_imgDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Article_img>(HttpStatus.CONFLICT);
+	return new ResponseEntity<Article_imgDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateArticle_img/{id}")
-public ResponseEntity<Article_img> updateArticle_img(@PathVariable int id,@RequestBody Article_img ab) {
+public ResponseEntity<Article_imgDto> updateArticle_img(@PathVariable int id,@RequestBody Article_imgDto dto) {
 	if(article_imgRepo.existsById(id)) {
+		Article_img ab=mapper.dtoToObject(dto);		
 		article_imgRepo.save(ab);
-		return new ResponseEntity<Article_img>(ab,HttpStatus.OK);
+		
+		return new ResponseEntity<Article_imgDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article_img>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Article_imgDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteArticle_img/{id}")
-public ResponseEntity<Article_img> deleteArticle_img(@PathVariable int id) {
+public ResponseEntity<Article_imgDto> deleteArticle_img(@PathVariable int id) {
 	if(article_imgRepo.existsById(id)) {
 		Article_img ab=article_imgRepo.deleteById(id);
-		return new ResponseEntity<Article_img>(ab,HttpStatus.OK);
+		Article_imgDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Article_imgDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Article_img>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Article_imgDto>(HttpStatus.NOT_FOUND);
 }
 
 

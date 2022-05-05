@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.test.microservices.dto.VideoDto;
 import com.test.microservices.mappers.VideoDtoToVideo;
 import com.test.microservices.pojos.Video;
-import com.test.microservices.repositories.VideosRepository;
+import com.test.microservices.repositories.VideoRepository;
 
 @RestController
 public class VideosController {
-	VideosRepository videoRepo;
+	VideoRepository videoRepo;
 	VideoDtoToVideo mapper;
-	public VideosController(VideosRepository repo,VideoDtoToVideo m) {
+	public VideosController(VideoRepository repo,VideoDtoToVideo m) {
 		this.videoRepo=repo;
 		this.mapper=m;
 		// TODO Auto-generated constructor stub

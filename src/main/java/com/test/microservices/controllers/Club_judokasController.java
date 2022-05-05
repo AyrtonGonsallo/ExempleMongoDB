@@ -12,60 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.Club_judokaDto;
+import com.test.microservices.mappers.Club_judokaDtoToClub_judoka;
 import com.test.microservices.pojos.Club_judoka;
-import com.test.microservices.repositories.Club_JudokaRepository;
+import com.test.microservices.repositories.Club_judokaRepository;
 @RestController
 public class Club_judokasController {
-	Club_JudokaRepository club_judokasRepo;
-	public Club_judokasController(Club_JudokaRepository repo) {
-		this.club_judokasRepo=repo;
-		// TODO Auto-generated constructor stub
+	Club_judokaDtoToClub_judoka mapper;
+	Club_judokaRepository club_judokaRepo;
+	public Club_judokasController(Club_judokaRepository repo,Club_judokaDtoToClub_judoka m) {
+		this.club_judokaRepo=repo;
+		this.mapper=m;
 	}
-@GetMapping("/getClub_judokasByIdMongo/{id}")
-public ResponseEntity<Club_judoka> getClub_judokas( @PathVariable String id) {
-	if(club_judokasRepo.existsByIdMongo(id)) {
-		Club_judoka ab=club_judokasRepo.findByIdMongo( id);
-		return new ResponseEntity<Club_judoka>(ab,HttpStatus.OK);
+@GetMapping("/getClub_judokaByIdMongo/{id}")
+public ResponseEntity<Club_judokaDto> getClub_judoka( @PathVariable String id) {
+	if(club_judokaRepo.existsByIdMongo(id)) {
+		Club_judoka ab=club_judokaRepo.findByIdMongo( id);
+		Club_judokaDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Club_judokaDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club_judoka>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Club_judokaDto>(HttpStatus.NOT_FOUND);
 }
-@GetMapping("/getClub_judokasById/{id}")
-public ResponseEntity<Club_judoka> getClub_judokas( @PathVariable int id) {
-	if(club_judokasRepo.existsById(id)) {
-		Club_judoka ab=club_judokasRepo.findById( id);
-		return new ResponseEntity<Club_judoka>(ab,HttpStatus.OK);
+@GetMapping("/getClub_judokaById/{id}")
+public ResponseEntity<Club_judokaDto> getClub_judoka( @PathVariable int id) {
+	if(club_judokaRepo.existsById(id)) {
+		Club_judoka ab=club_judokaRepo.findById( id);
+		Club_judokaDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Club_judokaDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club_judoka>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Club_judokaDto>(HttpStatus.NOT_FOUND);
 }
-@GetMapping("/getAllClub_judokass")
-public ResponseEntity<List<Club_judoka>> getClub_judokas( ) {
-	List<Club_judoka> lab=club_judokasRepo.findAll();
-	return new ResponseEntity<List<Club_judoka>>(lab,HttpStatus.OK);
+@GetMapping("/getAllClub_judokas")
+public ResponseEntity<List<Club_judokaDto>> getClub_judoka( ) {
+	List<Club_judoka> lab=club_judokaRepo.findAll();
+	List<Club_judokaDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<Club_judokaDto>>(ldto,HttpStatus.OK);
 }
-@PostMapping("/addClub_judokas")
-public ResponseEntity<Club_judoka> addClub_judokas(@RequestBody Club_judoka ab) {
-	if(!club_judokasRepo.existsById(ab.getId())) {
-		club_judokasRepo.save(ab);
-		return new ResponseEntity<Club_judoka>(ab,HttpStatus.CREATED);
+@PostMapping("/addClub_judoka")
+public ResponseEntity<Club_judokaDto> addClub_judoka(@RequestBody Club_judokaDto dto) {
+	if(!club_judokaRepo.existsById(dto.getId())) {
+		Club_judoka ab=mapper.dtoToObject(dto);
+		club_judokaRepo.save(ab);
+		return new ResponseEntity<Club_judokaDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Club_judoka>(HttpStatus.CONFLICT);
+	return new ResponseEntity<Club_judokaDto>(HttpStatus.CONFLICT);
 }
-@PutMapping("/updateClub_judokas/{id}")
-public ResponseEntity<Club_judoka> updateClub_judokas(@PathVariable int id,@RequestBody Club_judoka ab) {
-	if(club_judokasRepo.existsById(id)) {
-		club_judokasRepo.save(ab);
-		return new ResponseEntity<Club_judoka>(ab,HttpStatus.OK);
+@PutMapping("/updateClub_judoka/{id}")
+public ResponseEntity<Club_judokaDto> updateClub_judoka(@PathVariable int id,@RequestBody Club_judokaDto dto) {
+	if(club_judokaRepo.existsById(id)) {
+		Club_judoka ab=mapper.dtoToObject(dto);
+		club_judokaRepo.save(ab);
+		return new ResponseEntity<Club_judokaDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club_judoka>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Club_judokaDto>(HttpStatus.NOT_FOUND);
 }
-@DeleteMapping("/deleteClub_judokas/{id}")
-public ResponseEntity<Club_judoka> deleteClub_judokas(@PathVariable int id) {
-	if(club_judokasRepo.existsById(id)) {
-		Club_judoka ab=club_judokasRepo.deleteById(id);
-		return new ResponseEntity<Club_judoka>(ab,HttpStatus.OK);
+@DeleteMapping("/deleteClub_judoka/{id}")
+public ResponseEntity<Club_judokaDto> deleteClub_judoka(@PathVariable int id) {
+	if(club_judokaRepo.existsById(id)) {
+		Club_judoka ab=club_judokaRepo.deleteById(id);
+		Club_judokaDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Club_judokaDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Club_judoka>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Club_judokaDto>(HttpStatus.NOT_FOUND);
 }
+
+
 
 
 }

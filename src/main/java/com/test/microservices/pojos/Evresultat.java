@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -20,5 +21,11 @@ public class Evresultat {
 	public int EvenementID;
 	public int ChampionID;
 	public int equipeID;
+	@DocumentReference
+	private Evenement evenement2;
+	@DocumentReference
+	private Champion champion2;
+	@DocumentReference
+	private Evequipe evequipe2;
 	public String PoidID;
 }

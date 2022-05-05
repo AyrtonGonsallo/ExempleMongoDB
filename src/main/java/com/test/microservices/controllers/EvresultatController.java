@@ -12,61 +12,72 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.EvresultatDto;
+import com.test.microservices.mappers.EvresultatDtoToEvresultat;
 import com.test.microservices.pojos.Evresultat;
-import com.test.microservices.repositories.EvresultatsRepository;
+import com.test.microservices.repositories.EvresultatRepository;
 
 @RestController
 public class EvresultatController {
-	EvresultatsRepository evresultatRepo;
-	public EvresultatController(EvresultatsRepository repo) {
-		this.evresultatRepo=repo;
+	EvresultatDtoToEvresultat mapper;
+	EvresultatRepository objetRepo;
+	public EvresultatController(EvresultatRepository repo,EvresultatDtoToEvresultat m) {
+		this.objetRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getEvresultatByIdMongo/{id}")
-public ResponseEntity<Evresultat> getEvresultat( @PathVariable String id) {
-	if(evresultatRepo.existsByIdMongo(id)) {
-		Evresultat ab=evresultatRepo.findByIdMongo( id);
-		return new ResponseEntity<Evresultat>(ab,HttpStatus.OK);
+public ResponseEntity<EvresultatDto> getEvresultat( @PathVariable String id) {
+	if(objetRepo.existsByIdMongo(id)) {
+		Evresultat ab=objetRepo.findByIdMongo( id);
+		EvresultatDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvresultatDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evresultat>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvresultatDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getEvresultatById/{id}")
-public ResponseEntity<Evresultat> getEvresultat( @PathVariable int id) {
-	if(evresultatRepo.existsById(id)) {
-		Evresultat ab=evresultatRepo.findById( id);
-		return new ResponseEntity<Evresultat>(ab,HttpStatus.OK);
+public ResponseEntity<EvresultatDto> getEvresultat( @PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evresultat ab=objetRepo.findById( id);
+		EvresultatDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvresultatDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evresultat>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvresultatDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllEvresultats")
-public ResponseEntity<List<Evresultat>> getEvresultat( ) {
-	List<Evresultat> lab=evresultatRepo.findAll();
-	return new ResponseEntity<List<Evresultat>>(lab,HttpStatus.OK);
+public ResponseEntity<List<EvresultatDto>> getEvresultat( ) {
+	List<Evresultat> lab=objetRepo.findAll();
+	List<EvresultatDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<EvresultatDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addEvresultat")
-public ResponseEntity<Evresultat> addEvresultat(@RequestBody Evresultat ab) {
-	if(!evresultatRepo.existsById(ab.getId())) {
-		evresultatRepo.save(ab);
-		return new ResponseEntity<Evresultat>(ab,HttpStatus.CREATED);
+public ResponseEntity<EvresultatDto> addEvresultat(@RequestBody EvresultatDto dto) {
+	if(!objetRepo.existsById(dto.getId())) {
+		Evresultat ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvresultatDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Evresultat>(HttpStatus.CONFLICT);
+	return new ResponseEntity<EvresultatDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateEvresultat/{id}")
-public ResponseEntity<Evresultat> updateEvresultat(@PathVariable int id,@RequestBody Evresultat ab) {
-	if(evresultatRepo.existsById(id)) {
-		evresultatRepo.save(ab);
-		return new ResponseEntity<Evresultat>(ab,HttpStatus.OK);
+public ResponseEntity<EvresultatDto> updateEvresultat(@PathVariable int id,@RequestBody EvresultatDto dto) {
+	if(objetRepo.existsById(id)) {
+		Evresultat ab=mapper.dtoToObject(dto);
+		objetRepo.save(ab);
+		return new ResponseEntity<EvresultatDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evresultat>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvresultatDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteEvresultat/{id}")
-public ResponseEntity<Evresultat> deleteEvresultat(@PathVariable int id) {
-	if(evresultatRepo.existsById(id)) {
-		Evresultat ab=evresultatRepo.deleteById(id);
-		return new ResponseEntity<Evresultat>(ab,HttpStatus.OK);
+public ResponseEntity<EvresultatDto> deleteEvresultat(@PathVariable int id) {
+	if(objetRepo.existsById(id)) {
+		Evresultat ab=objetRepo.deleteById(id);
+		EvresultatDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<EvresultatDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Evresultat>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<EvresultatDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

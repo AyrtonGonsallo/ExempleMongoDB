@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -21,5 +22,9 @@ public class Galerie {
 	public String Photographe;
 	public int Evenement_id;
 	public String Admin;
+	@DocumentReference
+	private Admin admin2;
+	@DocumentReference
+	private Evenement evenement2;
 	public String lien;
 }

@@ -1,6 +1,7 @@
 package com.test.microservices.pojos;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.test.microservices.enums.Sexe;
@@ -28,6 +29,14 @@ public class Video {
 	public int Technique_id;
 	public int Technique2_id;
 	public int Evenement_id;
+	@DocumentReference
+	private Champion champion;
+	@DocumentReference
+	private Technique  technique;
+	@DocumentReference
+	private Technique  technique2;
+	@DocumentReference
+	private Evenement evenement;
 	public String PoidID;
 	public Sexe Sexe;
 	public Boolean top_ippon;

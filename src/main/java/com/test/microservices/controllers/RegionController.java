@@ -12,61 +12,72 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.RegionDto;
+import com.test.microservices.mappers.RegionDtoToRegion;
 import com.test.microservices.pojos.Region;
-import com.test.microservices.repositories.RegionsRepository;
+import com.test.microservices.repositories.RegionRepository;
 
 @RestController
 public class RegionController {
-	RegionsRepository regionRepo;
-	public RegionController(RegionsRepository repo) {
+	RegionRepository regionRepo;
+	RegionDtoToRegion mapper;
+	public RegionController(RegionRepository repo,RegionDtoToRegion m) {
 		this.regionRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getRegionByIdMongo/{id}")
-public ResponseEntity<Region> getRegion( @PathVariable String id) {
+public ResponseEntity<RegionDto> getRegion( @PathVariable String id) {
 	if(regionRepo.existsByIdMongo(id)) {
 		Region ab=regionRepo.findByIdMongo( id);
-		return new ResponseEntity<Region>(ab,HttpStatus.OK);
+		RegionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<RegionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Region>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<RegionDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getRegionById/{id}")
-public ResponseEntity<Region> getRegion( @PathVariable int id) {
+public ResponseEntity<RegionDto> getRegion( @PathVariable int id) {
 	if(regionRepo.existsById(id)) {
 		Region ab=regionRepo.findById( id);
-		return new ResponseEntity<Region>(ab,HttpStatus.OK);
+		RegionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<RegionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Region>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<RegionDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllRegions")
-public ResponseEntity<List<Region>> getRegion( ) {
+public ResponseEntity<List<RegionDto>> getRegion( ) {
 	List<Region> lab=regionRepo.findAll();
-	return new ResponseEntity<List<Region>>(lab,HttpStatus.OK);
+	List<RegionDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<RegionDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addRegion")
-public ResponseEntity<Region> addRegion(@RequestBody Region ab) {
-	if(!regionRepo.existsById(ab.getId())) {
+public ResponseEntity<RegionDto> addRegion(@RequestBody RegionDto dto) {
+	if(!regionRepo.existsById(dto.getId())) {
+		Region ab=mapper.dtoToObject(dto);
 		regionRepo.save(ab);
-		return new ResponseEntity<Region>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<RegionDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Region>(HttpStatus.CONFLICT);
+	return new ResponseEntity<RegionDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateRegion/{id}")
-public ResponseEntity<Region> updateRegion(@PathVariable int id,@RequestBody Region ab) {
+public ResponseEntity<RegionDto> updateRegion(@PathVariable int id,@RequestBody RegionDto dto) {
 	if(regionRepo.existsById(id)) {
+		Region ab=mapper.dtoToObject(dto);
 		regionRepo.save(ab);
-		return new ResponseEntity<Region>(ab,HttpStatus.OK);
+		return new ResponseEntity<RegionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Region>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<RegionDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteRegion/{id}")
-public ResponseEntity<Region> deleteRegion(@PathVariable int id) {
+public ResponseEntity<RegionDto> deleteRegion(@PathVariable int id) {
 	if(regionRepo.existsById(id)) {
 		Region ab=regionRepo.deleteById(id);
-		return new ResponseEntity<Region>(ab,HttpStatus.OK);
+		RegionDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<RegionDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Region>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<RegionDto>(HttpStatus.NOT_FOUND);
 }
+
 
 
 }

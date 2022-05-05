@@ -12,61 +12,74 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.Sous_categorieDto;
+import com.test.microservices.mappers.Sous_categorieDtoToSous_categorie;
 import com.test.microservices.pojos.Sous_categorie;
+import com.test.microservices.repositories.Sous_categorieRepository;
 import com.test.microservices.repositories.Sous_categorieRepository;
 
 @RestController
 public class SousCategorieController {
-	Sous_categorieRepository souscategorieRepo;
-	public SousCategorieController(Sous_categorieRepository repo) {
-		this.souscategorieRepo=repo;
+	Sous_categorieRepository userRepo;
+	Sous_categorieDtoToSous_categorie mapper;
+	public SousCategorieController(Sous_categorieRepository repo,Sous_categorieDtoToSous_categorie m) {
+		this.userRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getSous_categorieByIdMongo/{id}")
-public ResponseEntity<Sous_categorie> getSous_categorie( @PathVariable String id) {
-	if(souscategorieRepo.existsByIdMongo(id)) {
-		Sous_categorie ab=souscategorieRepo.findByIdMongo( id);
-		return new ResponseEntity<Sous_categorie>(ab,HttpStatus.OK);
+public ResponseEntity<Sous_categorieDto> getSous_categorie( @PathVariable String id) {
+	if(userRepo.existsByIdMongo(id)) {
+		Sous_categorie ab=userRepo.findByIdMongo( id);
+		Sous_categorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Sous_categorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Sous_categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Sous_categorieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getSous_categorieById/{id}")
-public ResponseEntity<Sous_categorie> getSous_categorie( @PathVariable int id) {
-	if(souscategorieRepo.existsById(id)) {
-		Sous_categorie ab=souscategorieRepo.findById( id);
-		return new ResponseEntity<Sous_categorie>(ab,HttpStatus.OK);
+public ResponseEntity<Sous_categorieDto> getSous_categorie( @PathVariable int id) {
+	if(userRepo.existsById(id)) {
+		Sous_categorie ab=userRepo.findById( id);
+		Sous_categorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Sous_categorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Sous_categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Sous_categorieDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllSous_categories")
-public ResponseEntity<List<Sous_categorie>> getSous_categorie( ) {
-	List<Sous_categorie> lab=souscategorieRepo.findAll();
-	return new ResponseEntity<List<Sous_categorie>>(lab,HttpStatus.OK);
+public ResponseEntity<List<Sous_categorieDto>> getSous_categorie( ) {
+	List<Sous_categorie> lab=userRepo.findAll();
+	List<Sous_categorieDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<Sous_categorieDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addSous_categorie")
-public ResponseEntity<Sous_categorie> addSous_categorie(@RequestBody Sous_categorie ab) {
-	if(!souscategorieRepo.existsById(ab.getId())) {
-		souscategorieRepo.save(ab);
-		return new ResponseEntity<Sous_categorie>(ab,HttpStatus.CREATED);
+public ResponseEntity<Sous_categorieDto> addSous_categorie(@RequestBody Sous_categorieDto dto) {
+	if(!userRepo.existsById(dto.getId())) {
+		Sous_categorie ab=mapper.dtoToObject(dto);
+		userRepo.save(ab);
+		return new ResponseEntity<Sous_categorieDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Sous_categorie>(HttpStatus.CONFLICT);
+	return new ResponseEntity<Sous_categorieDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updateSous_categorie/{id}")
-public ResponseEntity<Sous_categorie> updateSous_categorie(@PathVariable int id,@RequestBody Sous_categorie ab) {
-	if(souscategorieRepo.existsById(id)) {
-		souscategorieRepo.save(ab);
-		return new ResponseEntity<Sous_categorie>(ab,HttpStatus.OK);
+public ResponseEntity<Sous_categorieDto> updateSous_categorie(@PathVariable int id,@RequestBody Sous_categorieDto dto) {
+	if(userRepo.existsById(id)) {
+		Sous_categorie ab=mapper.dtoToObject(dto);
+		userRepo.save(ab);
+		return new ResponseEntity<Sous_categorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Sous_categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Sous_categorieDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deleteSous_categorie/{id}")
-public ResponseEntity<Sous_categorie> deleteSous_categorie(@PathVariable int id) {
-	if(souscategorieRepo.existsById(id)) {
-		Sous_categorie ab=souscategorieRepo.deleteById(id);
-		return new ResponseEntity<Sous_categorie>(ab,HttpStatus.OK);
+public ResponseEntity<Sous_categorieDto> deleteSous_categorie(@PathVariable int id) {
+	if(userRepo.existsById(id)) {
+		Sous_categorie ab=userRepo.deleteById(id);
+		Sous_categorieDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<Sous_categorieDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Sous_categorie>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<Sous_categorieDto>(HttpStatus.NOT_FOUND);
 }
+
+
 
 
 }

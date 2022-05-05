@@ -12,61 +12,73 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.PartenaireDto;
+import com.test.microservices.mappers.PartenaireDtoToPartenaire;
 import com.test.microservices.pojos.Partenaire;
 import com.test.microservices.repositories.PartenairesRepository;
 
 @RestController
 public class PartenairesController {
 	PartenairesRepository partenaireRepo;
-	public PartenairesController(PartenairesRepository repo) {
+	PartenaireDtoToPartenaire mapper;
+	public PartenairesController(PartenairesRepository repo,PartenaireDtoToPartenaire m) {
 		this.partenaireRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getPartenaireByIdMongo/{id}")
-public ResponseEntity<Partenaire> getPartenaire( @PathVariable String id) {
+public ResponseEntity<PartenaireDto> getPartenaire( @PathVariable String id) {
 	if(partenaireRepo.existsByIdMongo(id)) {
 		Partenaire ab=partenaireRepo.findByIdMongo( id);
-		return new ResponseEntity<Partenaire>(ab,HttpStatus.OK);
+		PartenaireDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PartenaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Partenaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PartenaireDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getPartenaireById/{id}")
-public ResponseEntity<Partenaire> getPartenaire( @PathVariable int id) {
+public ResponseEntity<PartenaireDto> getPartenaire( @PathVariable int id) {
 	if(partenaireRepo.existsById(id)) {
 		Partenaire ab=partenaireRepo.findById( id);
-		return new ResponseEntity<Partenaire>(ab,HttpStatus.OK);
+		PartenaireDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PartenaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Partenaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PartenaireDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getAllPartenaires")
-public ResponseEntity<List<Partenaire>> getPartenaire( ) {
+public ResponseEntity<List<PartenaireDto>> getPartenaire( ) {
 	List<Partenaire> lab=partenaireRepo.findAll();
-	return new ResponseEntity<List<Partenaire>>(lab,HttpStatus.OK);
+	List<PartenaireDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<PartenaireDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addPartenaire")
-public ResponseEntity<Partenaire> addPartenaire(@RequestBody Partenaire ab) {
-	if(!partenaireRepo.existsById(ab.getId())) {
+public ResponseEntity<PartenaireDto> addPartenaire(@RequestBody PartenaireDto dto) {
+	if(!partenaireRepo.existsById(dto.getId())) {
+		Partenaire ab=mapper.dtoToObject(dto);
 		partenaireRepo.save(ab);
-		return new ResponseEntity<Partenaire>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<PartenaireDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Partenaire>(HttpStatus.CONFLICT);
+	return new ResponseEntity<PartenaireDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updatePartenaire/{id}")
-public ResponseEntity<Partenaire> updatePartenaire(@PathVariable int id,@RequestBody Partenaire ab) {
+public ResponseEntity<PartenaireDto> updatePartenaire(@PathVariable int id,@RequestBody PartenaireDto dto) {
 	if(partenaireRepo.existsById(id)) {
+		Partenaire ab=mapper.dtoToObject(dto);
 		partenaireRepo.save(ab);
-		return new ResponseEntity<Partenaire>(ab,HttpStatus.OK);
+		return new ResponseEntity<PartenaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Partenaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PartenaireDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deletePartenaire/{id}")
-public ResponseEntity<Partenaire> deletePartenaire(@PathVariable int id) {
+public ResponseEntity<PartenaireDto> deletePartenaire(@PathVariable int id) {
 	if(partenaireRepo.existsById(id)) {
 		Partenaire ab=partenaireRepo.deleteById(id);
-		return new ResponseEntity<Partenaire>(ab,HttpStatus.OK);
+		PartenaireDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PartenaireDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Partenaire>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PartenaireDto>(HttpStatus.NOT_FOUND);
 }
+
+
 
 
 }

@@ -2,6 +2,7 @@ package com.test.microservices.pojos;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
@@ -20,4 +21,8 @@ public class Pari_resultat {
 	public int points;
 	public int pari_id;
 	public int user_id;
+	@DocumentReference
+	private Pari pari2;
+	@DocumentReference
+	private User user2;
 }

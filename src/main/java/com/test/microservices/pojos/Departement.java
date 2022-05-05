@@ -12,7 +12,9 @@ public class Departement {
 	private String idMongo;
 	@Field("ID")
 	private int id;
-	public String CP;
-	public String NomDepartement;
+	@Field("CP")
+	public String cp;
+	@Field("NomDepartement")
+	public String nomDepartement;
 	public String PaysID;
 }

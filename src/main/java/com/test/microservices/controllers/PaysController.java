@@ -12,60 +12,71 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.microservices.dto.PaysDto;
+import com.test.microservices.mappers.PaysDtoToPays;
+import com.test.microservices.pojos.Pays;
 import com.test.microservices.pojos.Pays;
 import com.test.microservices.repositories.PaysRepository;
 
 @RestController
 public class PaysController {
 	PaysRepository paysRepo;
-	public PaysController(PaysRepository repo) {
+	PaysDtoToPays mapper;
+	public PaysController(PaysRepository repo,PaysDtoToPays m) {
 		this.paysRepo=repo;
+		this.mapper=m;
 		// TODO Auto-generated constructor stub
 	}
 @GetMapping("/getPaysByIdMongo/{id}")
-public ResponseEntity<Pays> getPays( @PathVariable String id) {
+public ResponseEntity<PaysDto> getPays( @PathVariable String id) {
 	if(paysRepo.existsByIdMongo(id)) {
 		Pays ab=paysRepo.findByIdMongo( id);
-		return new ResponseEntity<Pays>(ab,HttpStatus.OK);
+		PaysDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PaysDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pays>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PaysDto>(HttpStatus.NOT_FOUND);
 }
 @GetMapping("/getPaysById/{id}")
-public ResponseEntity<Pays> getPays( @PathVariable int id) {
+public ResponseEntity<PaysDto> getPays( @PathVariable int id) {
 	if(paysRepo.existsById(id)) {
 		Pays ab=paysRepo.findById( id);
-		return new ResponseEntity<Pays>(ab,HttpStatus.OK);
+		PaysDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PaysDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pays>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PaysDto>(HttpStatus.NOT_FOUND);
 }
-@GetMapping("/getAllPayss")
-public ResponseEntity<List<Pays>> getPays( ) {
+@GetMapping("/getAllPays")
+public ResponseEntity<List<PaysDto>> getPays( ) {
 	List<Pays> lab=paysRepo.findAll();
-	return new ResponseEntity<List<Pays>>(lab,HttpStatus.OK);
+	List<PaysDto> ldto=mapper.objectsToDtos(lab);
+	return new ResponseEntity<List<PaysDto>>(ldto,HttpStatus.OK);
 }
 @PostMapping("/addPays")
-public ResponseEntity<Pays> addPays(@RequestBody Pays ab) {
-	if(!paysRepo.existsById(ab.getId())) {
+public ResponseEntity<PaysDto> addPays(@RequestBody PaysDto dto) {
+	if(!paysRepo.existsById(dto.getId())) {
+		Pays ab=mapper.dtoToObject(dto);
 		paysRepo.save(ab);
-		return new ResponseEntity<Pays>(ab,HttpStatus.CREATED);
+		return new ResponseEntity<PaysDto>(dto,HttpStatus.CREATED);
 	}
-	return new ResponseEntity<Pays>(HttpStatus.CONFLICT);
+	return new ResponseEntity<PaysDto>(HttpStatus.CONFLICT);
 }
 @PutMapping("/updatePays/{id}")
-public ResponseEntity<Pays> updatePays(@PathVariable int id,@RequestBody Pays ab) {
+public ResponseEntity<PaysDto> updatePays(@PathVariable int id,@RequestBody PaysDto dto) {
 	if(paysRepo.existsById(id)) {
+		Pays ab=mapper.dtoToObject(dto);
 		paysRepo.save(ab);
-		return new ResponseEntity<Pays>(ab,HttpStatus.OK);
+		return new ResponseEntity<PaysDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pays>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PaysDto>(HttpStatus.NOT_FOUND);
 }
 @DeleteMapping("/deletePays/{id}")
-public ResponseEntity<Pays> deletePays(@PathVariable int id) {
+public ResponseEntity<PaysDto> deletePays(@PathVariable int id) {
 	if(paysRepo.existsById(id)) {
 		Pays ab=paysRepo.deleteById(id);
-		return new ResponseEntity<Pays>(ab,HttpStatus.OK);
+		PaysDto dto=mapper.objectToDto(ab);
+		return new ResponseEntity<PaysDto>(dto,HttpStatus.OK);
 	}
-	return new ResponseEntity<Pays>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<PaysDto>(HttpStatus.NOT_FOUND);
 }
 
 
